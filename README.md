@@ -1,3 +1,3 @@
-# CaVeTalk
+# CAVeTalk
 
 CAVEMAN controller message protocol

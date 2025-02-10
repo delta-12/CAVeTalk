@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+package cave_talk;
+
+message Movement {
+    double speed = 1;
+    double turn_rate = 2;
+}
