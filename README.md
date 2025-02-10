@@ -14,10 +14,10 @@ CAVEMAN controller message protocol
 | ID | Name | Descriptor |
 | ----------- | ----------- | ----------- |
 | 0x01 |  Ooga | CAVeTalk Ping Message, should receive "Booga" back from the controller |
-| 0x02 | Movement | Describes the Speed in m/s & Turn Rate of the Rover in rad/s  |
-| 0x03 | Camera Movement | Describes the Camera Pan and Tilt Servo Angles in radians |
+| 0x02 | Movement | Describes the Speed [m/s] & Turn Rate of the Rover [rad/s]  |
+| 0x03 | Camera Movement | Describes the Camera Pan [radians] and Tilt Servo Angles [radians] |
 | 0x04 | Lights |  Toggles the Onboard Headlights |
-| 0x05 | Mode | Switches between Manual Driving Mode and Autonomous Driving Mode
+| 0x05 | Mode | Switches between Manual Driving Mode and Autonomous Driving Mode |
 
 3. Length refers to the length of the packet in bytes
 4. Payload refers to the main piece of information sent in the packet
