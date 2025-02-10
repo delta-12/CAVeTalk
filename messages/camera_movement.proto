@@ -3,6 +3,6 @@ syntax = "proto3";
 package cave_talk;
 
 message CameraMovement {
-    double pan_angle = 1;
-    double tilt_angle = 2;
+    double pan_angle_radians = 1;
+    double tilt_angle_radians = 2;
 }
