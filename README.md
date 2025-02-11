@@ -30,23 +30,38 @@ CAVEMAN controller message protocol
 
 When building the C version of this library and/or using this library on an embedded system, follow these steps to setup Protobufs:
 
-TODO
+1. Initialize and update submodules
+
+   `git submodule update --init --recursive`
+
+3. Navigate to the `nanopb` directory
+
+   `cd tools/nanopb`
+
+4. Run the `generate` script to generate the Protobuf payloads for C with `nanopb`
+
+    `./generate`
 
 ### C++
 
 When building the C++ version of this library, follow these steps to setup Protobufs:
 
 1. Initialize and update submodules
+
    `git submodule update --init --recursive`
 
-2. Navigate to `protobuf` directory
+2. Navigate to the `protobuf` directory
+
    `cd external/protobuf`
 
 3. Configure CMake build
+
    `cmake -S . -B _build -DCMAKE_INSTALL_PREFIX=_build/protobuf-install -DCMAKE_CXX_STANDARD=20 -G Ninja -DCMAKE_BUILD_TYPE=Release -Dprotobuf_BUILD_TESTS=OFF -DABSL_PROPAGATE_CXX_STD=ON`
 
 4. Build `protobufs`
+
    `cmake --build _build --config Release`
 
 5. Install `protobufs` in `external/protobufs/_build/protobuf-install`
+
    `cmake --build _build -t install`

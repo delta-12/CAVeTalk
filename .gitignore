@@ -1,0 +1,6 @@
+# Build
+_build
+build
+
+# Nanopb
+tools/nanopb/env
