@@ -21,3 +21,32 @@ CAVEMAN controller message protocol
 
 3. Length refers to the length of the packet in bytes
 4. Payload refers to the main piece of information sent in the packet
+
+## Protobufs
+
+[Protobufs](https://protobuf.dev/) are Google’s language-neutral, platform-neutral, extensible mechanism for serializing structured data. In this project, they are used to serialize message payloads.
+
+### C/Embedded
+
+When building the C version of this library and/or using this library on an embedded system, follow these steps to setup Protobufs:
+
+TODO
+
+### C++
+
+When building the C++ version of this library, follow these steps to setup Protobufs:
+
+1. Initialize and update submodules
+   `git submodule update --init --recursive`
+
+2. Navigate to `protobuf` directory
+   `cd external/protobuf`
+
+3. Configure CMake build
+   `cmake -S . -B _build -DCMAKE_INSTALL_PREFIX=_build/protobuf-install -DCMAKE_CXX_STANDARD=20 -G Ninja -DCMAKE_BUILD_TYPE=Release -Dprotobuf_BUILD_TESTS=OFF -DABSL_PROPAGATE_CXX_STD=ON`
+
+4. Build `protobufs`
+   `cmake --build _build --config Release`
+
+5. Install `protobufs` in `external/protobufs/_build/protobuf-install`
+   `cmake --build _build -t install`
