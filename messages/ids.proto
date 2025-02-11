@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package cave_talk;
+
+enum Id {
+    ID_NONE = 0;
+    ID_OOGA = 1;
+    ID_MOVEMENT = 2;
+    ID_CAMERA_MOVEMENT = 3;
+    ID_LIGHTS = 4;
+    ID_MODE = 5;
+}

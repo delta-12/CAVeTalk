@@ -2,8 +2,7 @@ syntax = "proto3";
 
 package cave_talk;
 
-enum Say
-{
+enum Say {
     SAY_OOGA = 0;
     SAY_BOOGA = 1;
 }
