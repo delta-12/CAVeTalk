@@ -17,7 +17,7 @@ namespace cave_talk
 class ListenerCallbacks
 {
     public:
-        virtual ~ListenerCallbacks() = 0;
+        virtual ~ListenerCallbacks()                                                                                   = 0;
         virtual void HearOogaBooga(const Say ooga_booga)                                                               = 0;
         virtual void HearMovement(const CaveTalk_MetersPerSecond_t speed, const CaveTalk_RadiansPerSecond_t turn_rate) = 0;
         virtual void HearCameraMovement(const CaveTalk_Radian_t pan, const CaveTalk_Radian_t tilt)                     = 0;

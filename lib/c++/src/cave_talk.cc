@@ -27,8 +27,8 @@ Listener::Listener(std::function<CaveTalk_Error_t(void *const data, const size_t
 
 CaveTalk_Error_t Listener::Listen(void)
 {
-    CaveTalk_Error_t error = CAVE_TALK_ERROR_NONE;
-    CaveTalk_Id_t    id    = 0U;
+    CaveTalk_Error_t  error  = CAVE_TALK_ERROR_NONE;
+    CaveTalk_Id_t     id     = 0U;
     CaveTalk_Length_t length = 0;
 
     size_t max_packet_size = 262; //from README
@@ -85,7 +85,7 @@ CaveTalk_Error_t Listener::HandleMovement(std::array<void*, 255> data, CaveTalk_
     Movement movement_message;
     movement_message.ParseFromArray(data.data(), length);
 
-    const CaveTalk_MetersPerSecond_t speed = movement_message.speed_meters_per_second();
+    const CaveTalk_MetersPerSecond_t  speed     = movement_message.speed_meters_per_second();
     const CaveTalk_RadiansPerSecond_t turn_rate = movement_message.turn_rate_radians_per_second();
 
     listener_callbacks_->HearMovement(speed, turn_rate);
@@ -100,7 +100,7 @@ CaveTalk_Error_t Listener::HandleCameraMovement(std::array<void*, 255> data, Cav
     CameraMovement camera_movement_message;
     camera_movement_message.ParseFromArray(data.data(), length);
 
-    const CaveTalk_Radian_t pan = camera_movement_message.pan_angle_radians();
+    const CaveTalk_Radian_t pan  = camera_movement_message.pan_angle_radians();
     const CaveTalk_Radian_t tilt = camera_movement_message.tilt_angle_radians();
 
     listener_callbacks_->HearCameraMovement(pan, tilt);
