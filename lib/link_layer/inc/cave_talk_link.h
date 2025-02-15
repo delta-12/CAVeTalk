@@ -4,9 +4,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
-typedef uint8_t CaveTalk_Version_t;
-typedef uint8_t CaveTalk_Id_t;
-typedef uint8_t CaveTalk_Length_t;
+typedef uint8_t  CaveTalk_Version_t;
+typedef uint8_t  CaveTalk_Id_t;
+typedef uint8_t  CaveTalk_Length_t;
 typedef uint32_t CaveTalk_Crc_t;
 
 typedef enum
@@ -36,10 +36,10 @@ CaveTalk_LinkError_t CaveTalk_Speak(CaveTalk_LinkHandle_t *const handle,
                                     const void *const data,
                                     const CaveTalk_Length_t length);
 CaveTalk_LinkError_t CaveTalk_Listen(CaveTalk_LinkHandle_t *const handle,
-                                        CaveTalk_Id_t *const id,
-                                        void *const data,
-                                        const size_t size,
-                                        CaveTalk_Length_t *const length);
+                                     CaveTalk_Id_t *const id,
+                                     void *const data,
+                                     const size_t size,
+                                     CaveTalk_Length_t *const length);
 
 #ifdef __cplusplus
 }
