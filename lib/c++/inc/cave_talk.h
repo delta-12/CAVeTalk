@@ -40,7 +40,6 @@ class Listener
         CaveTalk_Error_t Listen(void);
 
     private:
-        /* TODO SD-157 Separate methods to handle each message type, methods should call their respective callback */ //IMPLEMENTED
         CaveTalk_Error_t HandleOogaBooga(const void *const data, CaveTalk_Length_t length);
         CaveTalk_Error_t HandleMovement(const void *const data, CaveTalk_Length_t length);
         CaveTalk_Error_t HandleCameraMovement(const void *const data, CaveTalk_Length_t length);

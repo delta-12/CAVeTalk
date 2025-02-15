@@ -5,6 +5,10 @@
 
 #include "ids.pb.h"
 #include "ooga_booga.pb.h"
+#include "movement.pb.h"
+#include "camera_movement.pb.h"
+#include "lights.pb.h"
+#include "mode.pb.h"
 
 #include "cave_talk_link.h"
 #include "cave_talk_types.h"
@@ -25,43 +29,39 @@ CaveTalk_Error_t Listener::Listen(void)
 {
     CaveTalk_Error_t error = CAVE_TALK_ERROR_NONE;
     CaveTalk_Id_t    id    = 0U;
-    void data;
-    size_t size = 0U; //what is this doin
     CaveTalk_Length_t length = 0;
 
-    /* TODO SD-157 Call CaveTalk_Listen */ //IMPLEMENTED
-    error = CaveTalk_Listen(&link_handle_, id, data, size, length);
+    size_t max_packet_size = 262; //from README
+    void* buffer = malloc(262);
+
+    error = CaveTalk_Listen(&link_handle_, &id, buffer, max_packet_size, &length);
 
     switch (static_cast<Id>(id))
     {
     case ID_NONE:
-        /* TODO SD-157 */ //IMPLEMENTED
         error = CAVE_TALK_ERROR_ID;
         break;
     case ID_OOGA:
-        /* TODO SD-157 */ //IMPLEMENTED
-        error = HandleOogaBooga(data, length);
+        error = HandleOogaBooga(buffer, length);
         break;
     case ID_MOVEMENT:
-        /* TODO SD-157 */ //IMPLEMENTED
-        error = HandleMovement(data, length);
+        error = HandleMovement(buffer, length);
         break;
     case ID_CAMERA_MOVEMENT:
-        /* TODO SD-157 */ //IMPLEMENTED
-        error = HandleCameraMovement(data, length);
+        error = HandleCameraMovement(buffer, length);
         break;
     case ID_LIGHTS:
-        /* TODO SD-157 */ //IMPLEMENTED
-        error = HandleLights(data, length);
+        error = HandleLights(buffer, length);
         break;
     case ID_MODE:
-        /* TODO SD-157 */ //IMPLEMENTED
-        error = HandleMode(data, length);
+        error = HandleMode(buffer, length);
         break;
     default:
         error = CAVE_TALK_ERROR_ID;
         break;
     }
+
+    free(buffer);
 
     return error;
 }
@@ -73,9 +73,10 @@ CaveTalk_Error_t Listener::HandleOogaBooga(const void *const data, CaveTalk_Leng
     OogaBooga ooga_booga_message;
     ooga_booga_message.ParseFromArray(data, length);
 
-    const Say ooga_booga = ooga_booga_message.get_ooga_booga();
+    const Say ooga_booga = ooga_booga_message.ooga_booga();
 
-    HearOogaBooga(ooga_booga);
+    listener_callbacks_->HearOogaBooga(ooga_booga);
+    // HearOogaBooga(ooga_booga);
 
     return error;
 }
@@ -87,10 +88,10 @@ CaveTalk_Error_t Listener::HandleMovement(const void *const data, CaveTalk_Lengt
     Movement movement_message;
     movement_message.ParseFromArray(data, length);
 
-    const CaveTalk_MetersPerSecond_t speed = movement_message.get_speed_meters_per_second();
-    const CaveTalk_RadiansPerSecond_t turn_rate = movement_message.get_turn_rate_radians_per_second();
+    const CaveTalk_MetersPerSecond_t speed = movement_message.speed_meters_per_second();
+    const CaveTalk_RadiansPerSecond_t turn_rate = movement_message.turn_rate_radians_per_second();
 
-    HearMovement(speed, turn_rate);
+    listener_callbacks_->HearMovement(speed, turn_rate);
 
     return error;
 }
@@ -102,10 +103,10 @@ CaveTalk_Error_t Listener::HandleCameraMovement(const void *const data, CaveTalk
     CameraMovement camera_movement_message;
     camera_movement_message.ParseFromArray(data, length);
 
-    const CaveTalk_Radian_t pan = camera_movement_message.get_pan_angle_radians();
-    const CaveTalk_Radian_t tilt = camera_movement_message.get_tilt_angle_radians();
+    const CaveTalk_Radian_t pan = camera_movement_message.pan_angle_radians();
+    const CaveTalk_Radian_t tilt = camera_movement_message.tilt_angle_radians();
 
-    HearCameraMovement(pan, tilt);
+    listener_callbacks_->HearCameraMovement(pan, tilt);
 
     return error;
 }
@@ -117,9 +118,9 @@ CaveTalk_Error_t Listener::HandleLights(const void *const data, CaveTalk_Length_
     Lights lights_message;
     lights_message.ParseFromArray(data, length);
 
-    const bool headlights = lights_message.get_headlights();
+    const bool headlights = lights_message.headlights();
 
-    HearLights(headlights);
+    listener_callbacks_->HearLights(headlights);
 
     return error;
 }
@@ -131,9 +132,9 @@ CaveTalk_Error_t Listener::HandleMode(const void *const data, CaveTalk_Length_t 
     Mode mode_message;
     mode_message.ParseFromArray(data, length);
 
-    const bool manual = mode_message.get_mode();
+    const bool manual = mode_message.manual();
 
-    HearOogaBooga(manual);
+    listener_callbacks_->HearMode(manual);
 
     return error;
 }
@@ -159,7 +160,6 @@ CaveTalk_Error_t Talker::SpeakOogaBooga(const Say ooga_booga)
 
 CaveTalk_Error_t Talker::SpeakMovement(const CaveTalk_MetersPerSecond_t speed, const CaveTalk_RadiansPerSecond_t turn_rate)
 {
-    /* TODO SD-157 */ //IMPLEMENTED
     Movement movement_message;
     movement_message.set_speed_meters_per_second(speed);
     movement_message.set_turn_rate_radians_per_second(turn_rate);
@@ -173,10 +173,9 @@ CaveTalk_Error_t Talker::SpeakMovement(const CaveTalk_MetersPerSecond_t speed, c
 
 CaveTalk_Error_t Talker::SpeakCameraMovement(const CaveTalk_Radian_t pan, const CaveTalk_Radian_t tilt)
 {
-    /* TODO SD-157 */ //IMPLEMENTED
     CameraMovement camera_movement_message;
-    camera_movement_message.set_pan_angle_radians = pan;
-    camera_movement_message.set_tilt_angle_radians = tilt;
+    camera_movement_message.set_pan_angle_radians(pan);
+    camera_movement_message.set_tilt_angle_radians(tilt);
 
     std::size_t length = camera_movement_message.ByteSizeLong();
     message_buffer_.reserve(length);
@@ -188,9 +187,8 @@ CaveTalk_Error_t Talker::SpeakCameraMovement(const CaveTalk_Radian_t pan, const 
 
 CaveTalk_Error_t Talker::SpeakLights(const bool headlights)
 {
-    /* TODO SD-157 */ //IMPLEMENTED
     Lights lights_message;
-    lights_message.set_headlights = headlights;
+    lights_message.set_headlights(headlights);
 
     std::size_t length = lights_message.ByteSizeLong();
     message_buffer_.reserve(length);
@@ -202,9 +200,8 @@ CaveTalk_Error_t Talker::SpeakLights(const bool headlights)
 
 CaveTalk_Error_t Talker::SpeakMode(const bool manual)
 {
-    /* TODO SD-157 */ //IMPLEMENTED
     Mode mode_message;
-    mode_message.set_mode = manual;
+    mode_message.set_manual(manual);
 
     std::size_t length = mode_message.ByteSizeLong();
     message_buffer_.reserve(length);
