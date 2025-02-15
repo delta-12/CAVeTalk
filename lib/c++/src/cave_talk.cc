@@ -12,13 +12,19 @@
 namespace cave_talk
 {
 
-Talker::Talker(std::function<CaveTalk_Error_t(const void *const data, const size_t size)> &send,
-               std::function<CaveTalk_Error_t(void *const data, const size_t size, size_t *const bytes_received)> &receive,
-               std::function<CaveTalk_Error_t(size_t *const bytes)> &available)
+Listener::Listener(std::function<CaveTalk_Error_t(void *const data, const size_t size, size_t *const bytes_received)> &receive,
+                   std::function<CaveTalk_Error_t(size_t *const bytes)> &available)
 {
-    link_handle_.send      = *send.target<CaveTalk_Error_t (*)(const void *const data, const size_t size)>();
+    link_handle_.send      = nullptr;
     link_handle_.receive   = *receive.target<CaveTalk_Error_t (*)(void *const data, const size_t size, size_t *const bytes_received)>();
     link_handle_.available = *available.target<CaveTalk_Error_t (*)(size_t *const bytes)>();
+}
+
+Talker::Talker(std::function<CaveTalk_Error_t(const void *const data, const size_t size)> &send)
+{
+    link_handle_.send      = *send.target<CaveTalk_Error_t (*)(const void *const data, const size_t size)>();
+    link_handle_.receive   = nullptr;
+    link_handle_.available = nullptr;
 }
 
 CaveTalk_Error_t Talker::SpeakOogaBooga(const Say ooga_booga)
