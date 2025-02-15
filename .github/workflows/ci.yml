@@ -9,7 +9,7 @@ jobs:
       image: d3lta12/alpine-build-tools
     steps:
       - name: Setup
-        uses: ./.github/workflows/setup.yml
+        uses: ./.github/workflows/action.yml
       - name: Build check
         run: cmake --build build -j$(nproc)
   cppcheck:
