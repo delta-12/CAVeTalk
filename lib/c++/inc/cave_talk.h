@@ -20,11 +20,11 @@ class ListenerCallbacks
         virtual ~ListenerCallbacks() = 0;
 
     private:
-        virtual void HearOogaBooga(const Say ooga_booga)                                                                    = 0;
-        virtual void HearSpeakMovement(const CaveTalk_MetersPerSecond_t speed, const CaveTalk_RadiansPerSecond_t turn_rate) = 0;
-        virtual void SpeakCameraMovement(const CaveTalk_Radian_t pan, const CaveTalk_Radian_t tilt)                         = 0;
-        virtual void SpeakLights(const bool headlights)                                                                     = 0;
-        virtual void SpeakMode(const bool manual)                                                                           = 0;
+        virtual void HearOogaBooga(const Say ooga_booga)                                                               = 0;
+        virtual void HearMovement(const CaveTalk_MetersPerSecond_t speed, const CaveTalk_RadiansPerSecond_t turn_rate) = 0;
+        virtual void HearCameraMovement(const CaveTalk_Radian_t pan, const CaveTalk_Radian_t tilt)                     = 0;
+        virtual void HearLights(const bool headlights)                                                                 = 0;
+        virtual void HearMode(const bool manual)                                                                       = 0;
 };
 
 class Listener
