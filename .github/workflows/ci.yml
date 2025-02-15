@@ -8,8 +8,12 @@ jobs:
     container:
       image: d3lta12/alpine-build-tools
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: "recursive"
       - name: Setup
-        uses: CAVEMaN-SeniorDesign/CAVeTalk/.github/workflows/action.yml
+        uses: ./.github/workflows/action.yml
       - name: Build check
         run: cmake --build build -j$(nproc)
   cppcheck:
