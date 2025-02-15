@@ -24,7 +24,7 @@ Listener::Listener(std::function<CaveTalk_Error_t(void *const data, const size_t
 CaveTalk_Error_t Listener::Listen(void)
 {
     CaveTalk_Error_t error = CAVE_TALK_ERROR_NONE;
-    CaveTalk_Id_t    id;
+    CaveTalk_Id_t    id    = 0U;
 
     /* TODO SD-157 Call CaveTalk_Listen */
 
