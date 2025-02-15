@@ -13,11 +13,47 @@ namespace cave_talk
 {
 
 Listener::Listener(std::function<CaveTalk_Error_t(void *const data, const size_t size, size_t *const bytes_received)> &receive,
-                   std::function<CaveTalk_Error_t(size_t *const bytes)> &available)
+                   std::function<CaveTalk_Error_t(size_t *const bytes)> &available,
+                   std::shared_ptr<ListenerCallbacks> listener_callbacks) : listener_callbacks_(listener_callbacks)
 {
     link_handle_.send      = nullptr;
     link_handle_.receive   = *receive.target<CaveTalk_Error_t (*)(void *const data, const size_t size, size_t *const bytes_received)>();
     link_handle_.available = *available.target<CaveTalk_Error_t (*)(size_t *const bytes)>();
+}
+
+CaveTalk_Error_t Listener::Listen(void)
+{
+    CaveTalk_Error_t error = CAVE_TALK_ERROR_NONE;
+    CaveTalk_Id_t    id;
+
+    /* TODO SD-157 Call CaveTalk_Listen */
+
+    switch (static_cast<Id>(id))
+    {
+    case ID_NONE:
+        /* TODO SD-157 */
+        break;
+    case ID_OOGA:
+        /* TODO SD-157 */
+        break;
+    case ID_MOVEMENT:
+        /* TODO SD-157 */
+        break;
+    case ID_CAMERA_MOVEMENT:
+        /* TODO SD-157 */
+        break;
+    case ID_LIGHTS:
+        /* TODO SD-157 */
+        break;
+    case ID_MODE:
+        /* TODO SD-157 */
+        break;
+    default:
+        error = CAVE_TALK_ERROR_ID;
+        break;
+    }
+
+    return error;
 }
 
 Talker::Talker(std::function<CaveTalk_Error_t(const void *const data, const size_t size)> &send)

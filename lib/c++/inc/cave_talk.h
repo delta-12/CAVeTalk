@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <functional>
+#include <memory>
 #include <vector>
 
 #include "ooga_booga.pb.h"
@@ -29,28 +30,29 @@ class ListenerCallbacks
 class Listener
 {
     public:
-        /* TODO SD-157 ListenerCallbacks dependency injection */
         Listener(std::function<CaveTalk_Error_t(void *const data, const size_t size, size_t *const bytes_received)> &receive,
-                 std::function<CaveTalk_Error_t(size_t *const bytes)> &available);
-        Listener(Listener& listener)                  = delete;
-        Listener(Listener&& listener)                 = delete;
-        Listener& operator=(const Listener& listener) = delete;
-        Listener& operator=(Listener&& listener)      = delete;
-
-    /* TODO SD-157 listen method*/
+                 std::function<CaveTalk_Error_t(size_t *const bytes)> &available,
+                 std::shared_ptr<ListenerCallbacks> listener_callbacks);
+        Listener(Listener &listener)                  = delete;
+        Listener(Listener &&listener)                 = delete;
+        Listener &operator=(const Listener &listener) = delete;
+        Listener &operator=(Listener &&listener)      = delete;
+        CaveTalk_Error_t Listen(void);
 
     private:
+        /* TODO SD-157 Separate methods to handle each message type, methods should call their respective callback */
         CaveTalk_LinkHandle_t link_handle_;
+        std::shared_ptr<ListenerCallbacks> listener_callbacks_;
 };
 
 class Talker
 {
     public:
         explicit Talker(std::function<CaveTalk_Error_t(const void *const data, const size_t size)> &send);
-        Talker(Talker& talker)                  = delete;
-        Talker(Talker&& talker)                 = delete;
-        Talker& operator=(const Talker& talker) = delete;
-        Talker& operator=(Talker&& talker)      = delete;
+        Talker(Talker &talker)                  = delete;
+        Talker(Talker &&talker)                 = delete;
+        Talker &operator=(const Talker &talker) = delete;
+        Talker &operator=(Talker &&talker)      = delete;
         CaveTalk_Error_t SpeakOogaBooga(const Say ooga_booga);
         CaveTalk_Error_t SpeakMovement(const CaveTalk_MetersPerSecond_t speed, const CaveTalk_RadiansPerSecond_t turn_rate);
         CaveTalk_Error_t SpeakCameraMovement(const CaveTalk_Radian_t pan, const CaveTalk_Radian_t tilt);
