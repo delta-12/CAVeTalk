@@ -32,9 +32,8 @@ CaveTalk_Error_t Listener::Listen(void)
     CaveTalk_Length_t length = 0;
 
     size_t max_packet_size = 262; //from README
-    void* buffer = malloc(262);
 
-    error = CaveTalk_Listen(&link_handle_, &id, buffer, max_packet_size, &length);
+    error = CaveTalk_Listen(&link_handle_, &id, buffer_.data(), max_packet_size, &length);
 
     switch (static_cast<Id>(id))
     {
@@ -42,36 +41,34 @@ CaveTalk_Error_t Listener::Listen(void)
         error = CAVE_TALK_ERROR_ID;
         break;
     case ID_OOGA:
-        error = HandleOogaBooga(buffer, length);
+        error = HandleOogaBooga(buffer_, length);
         break;
     case ID_MOVEMENT:
-        error = HandleMovement(buffer, length);
+        error = HandleMovement(buffer_, length);
         break;
     case ID_CAMERA_MOVEMENT:
-        error = HandleCameraMovement(buffer, length);
+        error = HandleCameraMovement(buffer_, length);
         break;
     case ID_LIGHTS:
-        error = HandleLights(buffer, length);
+        error = HandleLights(buffer_, length);
         break;
     case ID_MODE:
-        error = HandleMode(buffer, length);
+        error = HandleMode(buffer_, length);
         break;
     default:
         error = CAVE_TALK_ERROR_ID;
         break;
     }
 
-    free(buffer);
-
     return error;
 }
 
-CaveTalk_Error_t Listener::HandleOogaBooga(const void *const data, CaveTalk_Length_t length)
+CaveTalk_Error_t Listener::HandleOogaBooga(std::array<void*, 255> data, CaveTalk_Length_t length)
 {
     CaveTalk_Error_t error = CAVE_TALK_ERROR_NONE;
 
     OogaBooga ooga_booga_message;
-    ooga_booga_message.ParseFromArray(data, length);
+    ooga_booga_message.ParseFromArray(data.data(), length);
 
     const Say ooga_booga = ooga_booga_message.ooga_booga();
 
@@ -81,12 +78,12 @@ CaveTalk_Error_t Listener::HandleOogaBooga(const void *const data, CaveTalk_Leng
     return error;
 }
 
-CaveTalk_Error_t Listener::HandleMovement(const void *const data, CaveTalk_Length_t length)
+CaveTalk_Error_t Listener::HandleMovement(std::array<void*, 255> data, CaveTalk_Length_t length)
 {
     CaveTalk_Error_t error = CAVE_TALK_ERROR_NONE;
 
     Movement movement_message;
-    movement_message.ParseFromArray(data, length);
+    movement_message.ParseFromArray(data.data(), length);
 
     const CaveTalk_MetersPerSecond_t speed = movement_message.speed_meters_per_second();
     const CaveTalk_RadiansPerSecond_t turn_rate = movement_message.turn_rate_radians_per_second();
@@ -96,12 +93,12 @@ CaveTalk_Error_t Listener::HandleMovement(const void *const data, CaveTalk_Lengt
     return error;
 }
 
-CaveTalk_Error_t Listener::HandleCameraMovement(const void *const data, CaveTalk_Length_t length)
+CaveTalk_Error_t Listener::HandleCameraMovement(std::array<void*, 255> data, CaveTalk_Length_t length)
 {
     CaveTalk_Error_t error = CAVE_TALK_ERROR_NONE;
 
     CameraMovement camera_movement_message;
-    camera_movement_message.ParseFromArray(data, length);
+    camera_movement_message.ParseFromArray(data.data(), length);
 
     const CaveTalk_Radian_t pan = camera_movement_message.pan_angle_radians();
     const CaveTalk_Radian_t tilt = camera_movement_message.tilt_angle_radians();
@@ -111,12 +108,12 @@ CaveTalk_Error_t Listener::HandleCameraMovement(const void *const data, CaveTalk
     return error;
 }
 
-CaveTalk_Error_t Listener::HandleLights(const void *const data, CaveTalk_Length_t length)
+CaveTalk_Error_t Listener::HandleLights(std::array<void*, 255> data, CaveTalk_Length_t length)
 {
     CaveTalk_Error_t error = CAVE_TALK_ERROR_NONE;
 
     Lights lights_message;
-    lights_message.ParseFromArray(data, length);
+    lights_message.ParseFromArray(data.data(), length);
 
     const bool headlights = lights_message.headlights();
 
@@ -125,12 +122,12 @@ CaveTalk_Error_t Listener::HandleLights(const void *const data, CaveTalk_Length_
     return error;
 }
 
-CaveTalk_Error_t Listener::HandleMode(const void *const data, CaveTalk_Length_t length)
+CaveTalk_Error_t Listener::HandleMode(std::array<void*, 255> data, CaveTalk_Length_t length)
 {
     CaveTalk_Error_t error = CAVE_TALK_ERROR_NONE;
 
     Mode mode_message;
-    mode_message.ParseFromArray(data, length);
+    mode_message.ParseFromArray(data.data(), length);
 
     const bool manual = mode_message.manual();
 
