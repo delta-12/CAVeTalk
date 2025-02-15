@@ -13,7 +13,7 @@ jobs:
         with:
           submodules: "recursive"
       - name: Setup
-        uses: ./.github/workflows/action.yml
+        uses: ./.github/actions/action.yml
       - name: Build check
         run: cmake --build build -j$(nproc)
   cppcheck:
