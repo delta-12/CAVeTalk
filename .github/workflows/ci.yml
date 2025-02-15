@@ -1,5 +1,16 @@
+name: CI Workflow
+
 on: [push]
+
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: d3lta12/alpine-build-tools
+    uses: ./.github/workflows/setup.yml
+    steps:
+      - name: Build check
+        run: cmake --build build -j$(nproc)
   cppcheck:
     runs-on: ubuntu-latest
     container:
