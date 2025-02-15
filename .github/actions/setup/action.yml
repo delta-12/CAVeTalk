@@ -18,6 +18,7 @@ runs:
         cmake --build _build --config Release
         cmake --build _build -t install
         cd ../../
+      shell: bash
     - name: Cache CMake files
       id: cache-cmake
       uses: actions/cache@v4
@@ -29,3 +30,4 @@ runs:
     - name: Generate CMake cache
       if: ${{ steps.cache-cmake.outputs.cache-hit != 'true' }}
       run: cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug
+      shell: bash
