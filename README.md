@@ -76,12 +76,20 @@ Prerequisites
 - Python3
 
 1. Setup Protobufs for the version(s) of the library being built.  See [Protobufs](#protobufs).
-2. Configure CMake.
+
+2. See the `docs` directory for how to perform static analysis and code formatting. **You must set up cppcheck and uncrustify before configuring CMake.**
+
+3. Configure CMake.
 
    `cmake -B build -G Ninja`
 
-3. Build the project.
+4. Build the project.
 
    `cmake --build build`
 
-4. See the `docs` directory for how to perform static analysis and code formatting.
+5. Run the static analysis tools from the root directory
+
+- cppcheck: `cmake --build build -t cppcheck`
+
+- uncrustify: `cmake --build build -t uncrustify`
+
