@@ -14,6 +14,9 @@
 namespace cave_talk
 {
 
+
+const std::size_t kMaxPayloadSize = 255;
+
 class ListenerCallbacks
 {
     public:
@@ -38,14 +41,14 @@ class Listener
         CaveTalk_Error_t Listen(void);
 
     private:
-        CaveTalk_Error_t HandleOogaBooga(std::array<void*, 255> data, CaveTalk_Length_t length);
-        CaveTalk_Error_t HandleMovement(std::array<void*, 255> data, CaveTalk_Length_t length);
-        CaveTalk_Error_t HandleCameraMovement(std::array<void*, 255> data, CaveTalk_Length_t length);
-        CaveTalk_Error_t HandleLights(std::array<void*, 255> data, CaveTalk_Length_t length);
-        CaveTalk_Error_t HandleMode(std::array<void*, 255> data, CaveTalk_Length_t length);
+        CaveTalk_Error_t HandleOogaBooga(const CaveTalk_Length_t length);
+        CaveTalk_Error_t HandleMovement(const CaveTalk_Length_t length);
+        CaveTalk_Error_t HandleCameraMovement(const CaveTalk_Length_t length);
+        CaveTalk_Error_t HandleLights(const CaveTalk_Length_t length);
+        CaveTalk_Error_t HandleMode(const CaveTalk_Length_t length);
         CaveTalk_LinkHandle_t link_handle_;
         std::shared_ptr<ListenerCallbacks> listener_callbacks_;
-        std::array<void*, 255> buffer_;
+        std::array<uint8_t, kMaxPayloadSize> buffer_;
 };
 
 class Talker

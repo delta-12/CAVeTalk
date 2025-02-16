@@ -92,3 +92,4 @@ Prerequisites
 - cppcheck: `cmake --build build -t cppcheck`
 
 - uncrustify: `cmake --build build -t uncrustify`
+

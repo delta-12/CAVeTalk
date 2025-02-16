@@ -31,9 +31,8 @@ CaveTalk_Error_t Listener::Listen(void)
     CaveTalk_Id_t     id     = 0U;
     CaveTalk_Length_t length = 0;
 
-    size_t max_packet_size = 262; //from README
 
-    error = CaveTalk_Listen(&link_handle_, &id, buffer_.data(), max_packet_size, &length);
+    error = CaveTalk_Listen(&link_handle_, &id, buffer_.data(), buffer_.size(), &length);
 
     switch (static_cast<Id>(id))
     {
@@ -41,19 +40,19 @@ CaveTalk_Error_t Listener::Listen(void)
         error = CAVE_TALK_ERROR_ID;
         break;
     case ID_OOGA:
-        error = HandleOogaBooga(buffer_, length);
+        error = HandleOogaBooga(length);
         break;
     case ID_MOVEMENT:
-        error = HandleMovement(buffer_, length);
+        error = HandleMovement(length);
         break;
     case ID_CAMERA_MOVEMENT:
-        error = HandleCameraMovement(buffer_, length);
+        error = HandleCameraMovement(length);
         break;
     case ID_LIGHTS:
-        error = HandleLights(buffer_, length);
+        error = HandleLights(length);
         break;
     case ID_MODE:
-        error = HandleMode(buffer_, length);
+        error = HandleMode(length);
         break;
     default:
         error = CAVE_TALK_ERROR_ID;
@@ -63,77 +62,91 @@ CaveTalk_Error_t Listener::Listen(void)
     return error;
 }
 
-CaveTalk_Error_t Listener::HandleOogaBooga(std::array<void*, 255> data, CaveTalk_Length_t length)
+CaveTalk_Error_t Listener::HandleOogaBooga(CaveTalk_Length_t length)
 {
-    CaveTalk_Error_t error = CAVE_TALK_ERROR_NONE;
 
     OogaBooga ooga_booga_message;
-    ooga_booga_message.ParseFromArray(data.data(), length);
+
+    if (!ooga_booga_message.ParseFromArray(buffer_.data(), length))
+    {
+        return CAVE_TALK_ERROR_PARSE;
+    }
 
     const Say ooga_booga = ooga_booga_message.ooga_booga();
 
     listener_callbacks_->HearOogaBooga(ooga_booga);
-    // HearOogaBooga(ooga_booga);
 
-    return error;
+    return CAVE_TALK_ERROR_NONE;
 }
 
-CaveTalk_Error_t Listener::HandleMovement(std::array<void*, 255> data, CaveTalk_Length_t length)
+CaveTalk_Error_t Listener::HandleMovement(CaveTalk_Length_t length)
 {
-    CaveTalk_Error_t error = CAVE_TALK_ERROR_NONE;
 
     Movement movement_message;
-    movement_message.ParseFromArray(data.data(), length);
+
+    if (!movement_message.ParseFromArray(buffer_.data(), length))
+    {
+        return CAVE_TALK_ERROR_PARSE;
+    }
 
     const CaveTalk_MetersPerSecond_t  speed     = movement_message.speed_meters_per_second();
     const CaveTalk_RadiansPerSecond_t turn_rate = movement_message.turn_rate_radians_per_second();
 
     listener_callbacks_->HearMovement(speed, turn_rate);
 
-    return error;
+    return CAVE_TALK_ERROR_NONE;
 }
 
-CaveTalk_Error_t Listener::HandleCameraMovement(std::array<void*, 255> data, CaveTalk_Length_t length)
+CaveTalk_Error_t Listener::HandleCameraMovement(CaveTalk_Length_t length)
 {
-    CaveTalk_Error_t error = CAVE_TALK_ERROR_NONE;
 
     CameraMovement camera_movement_message;
-    camera_movement_message.ParseFromArray(data.data(), length);
+
+    if (!camera_movement_message.ParseFromArray(buffer_.data(), length))
+    {
+        return CAVE_TALK_ERROR_PARSE;
+    }
 
     const CaveTalk_Radian_t pan  = camera_movement_message.pan_angle_radians();
     const CaveTalk_Radian_t tilt = camera_movement_message.tilt_angle_radians();
 
     listener_callbacks_->HearCameraMovement(pan, tilt);
 
-    return error;
+    return CAVE_TALK_ERROR_NONE;
 }
 
-CaveTalk_Error_t Listener::HandleLights(std::array<void*, 255> data, CaveTalk_Length_t length)
+CaveTalk_Error_t Listener::HandleLights(CaveTalk_Length_t length)
 {
-    CaveTalk_Error_t error = CAVE_TALK_ERROR_NONE;
 
     Lights lights_message;
-    lights_message.ParseFromArray(data.data(), length);
+
+    if (!lights_message.ParseFromArray(buffer_.data(), length))
+    {
+        return CAVE_TALK_ERROR_PARSE;
+    }
 
     const bool headlights = lights_message.headlights();
 
     listener_callbacks_->HearLights(headlights);
 
-    return error;
+    return CAVE_TALK_ERROR_NONE;
 }
 
-CaveTalk_Error_t Listener::HandleMode(std::array<void*, 255> data, CaveTalk_Length_t length)
+CaveTalk_Error_t Listener::HandleMode(CaveTalk_Length_t length)
 {
-    CaveTalk_Error_t error = CAVE_TALK_ERROR_NONE;
 
     Mode mode_message;
-    mode_message.ParseFromArray(data.data(), length);
+
+    if (!mode_message.ParseFromArray(buffer_.data(), length))
+    {
+        return CAVE_TALK_ERROR_PARSE;
+    }
 
     const bool manual = mode_message.manual();
 
     listener_callbacks_->HearMode(manual);
 
-    return error;
+    return CAVE_TALK_ERROR_NONE;
 }
 
 Talker::Talker(std::function<CaveTalk_Error_t(const void *const data, const size_t size)> &send)
