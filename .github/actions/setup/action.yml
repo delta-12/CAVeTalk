@@ -29,8 +29,7 @@ runs:
         key: ${{ env.cache-name }}-${{ hashFiles('**/CMakeLists.txt', '**.cmake') }}
     - name: Generate C message sources
       run: |
-        chmod +x ./tools/nanopb/generate
-        ./tools/nanopb/generate
+        bash ./tools/nanopb/generate
       shell: sh
     - name: Generate CMake cache
       if: ${{ steps.cache-cmake.outputs.cache-hit != 'true' }}
