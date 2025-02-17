@@ -1,24 +1,26 @@
 #!/bin/bash
 
-ENV_DIR=env
-OUT_DIR=../../build/c-protobufs
-MSG_DIR=../../messages
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+ENV_DIR=$SCRIPT_DIR/env
+OUT_DIR=$SCRIPT_DIR/../../build/CAVeTalk_c_protos
+MSG_DIR=$SCRIPT_DIR/../../messages
+NANOPB_DIR=$SCRIPT_DIR/nanopb
 
 # Setup virtual environment
 if [ ! -d "$ENV_DIR" ]; then
     # Install nanopb requirements
     python3 -m venv $ENV_DIR
-    source env/bin/activate
-    pip3 install -r nanopb/requirements.txt
+    source $ENV_DIR/bin/activate
+    pip3 install -r $NANOPB_DIR/requirements.txt
 else
-    source env/bin/activate
+    source $ENV_DIR/bin/activate
 fi
 
 # Generate Protobuf payloads for C
 if [ ! -d "$OUT_DIR" ]; then
     mkdir -p $OUT_DIR
 fi 
-python3 nanopb/generator/nanopb_generator.py -I $MSG_DIR $MSG_DIR/*.proto -D $OUT_DIR
+python3 $NANOPB_DIR/generator/nanopb_generator.py -I $MSG_DIR $MSG_DIR/*.proto -D $OUT_DIR
 
 # Exit virtual environment
 deactivate
