@@ -77,7 +77,7 @@ Prerequisites
 
 1. Setup Protobufs for the version(s) of the library being built.  See [Protobufs](#protobufs).
 
-2. See the `docs` directory for how to perform static analysis and code formatting. **You must set up cppcheck and uncrustify before configuring CMake.**
+2. See the `docs` directory for how to perform static analysis and code formatting. **You must set up Cppcheck and Uncrustify before configuring CMake.**
 
 3. Configure CMake.
 
@@ -87,9 +87,7 @@ Prerequisites
 
    `cmake --build build`
 
-5. Run the static analysis tools from the root directory
+5. Run the static analysis and code formatting tools.
 
-- cppcheck: `cmake --build build -t cppcheck`
-
-- uncrustify: `cmake --build build -t uncrustify`
-
+   - Cppcheck: `cmake --build build -t cppcheck`
+   - Uncrustify: `cmake --build build -t uncrustify`
