@@ -211,10 +211,11 @@ CaveTalk_Error_t CaveTalk_SpeakMode(const CaveTalk_Handle_t *const handle, const
 
 static CaveTalk_Error_t CaveTalk_HandleOogaBooga(const CaveTalk_Handle_t *const handle, const CaveTalk_Length_t length)
 {
-    CaveTalk_Error_t error = CAVE_TALK_ERROR_NULL;
+    CaveTalk_Error_t error = CAVE_TALK_ERROR_NONE;
 
-    if (NULL == handle)
+    if ((NULL == handle) || (NULL == handle->buffer))
     {
+        error = CAVE_TALK_ERROR_NULL;
     }
     else
     {
@@ -226,14 +227,25 @@ static CaveTalk_Error_t CaveTalk_HandleOogaBooga(const CaveTalk_Handle_t *const 
 
 static CaveTalk_Error_t CaveTalk_HandleMovement(const CaveTalk_Handle_t *const handle, const CaveTalk_Length_t length)
 {
-    CaveTalk_Error_t error = CAVE_TALK_ERROR_NULL;
+    CaveTalk_Error_t error = CAVE_TALK_ERROR_NONE;
 
-    if (NULL == handle)
+    if ((NULL == handle) || (NULL == handle->buffer))
     {
+        error = CAVE_TALK_ERROR_NULL;
     }
     else
     {
-        /* TODO SD-158 */
+        pb_istream_t       istream          = pb_istream_from_buffer(handle->buffer, handle->buffer_size);
+        cave_talk_Movement movement_message = cave_talk_Movement_init_zero;
+
+        if (!pb_decode(&istream, cave_talk_Movement_fields, &movement_message))
+        {
+            error = CAVE_TALK_ERROR_PARSE;
+        }
+        else if (NULL != handle->listen_callbacks.hear_movement)
+        {
+            handle->listen_callbacks.hear_movement(movement_message.speed_meters_per_second, movement_message.turn_rate_radians_per_second);
+        }
     }
 
     return error;
@@ -241,10 +253,11 @@ static CaveTalk_Error_t CaveTalk_HandleMovement(const CaveTalk_Handle_t *const h
 
 static CaveTalk_Error_t CaveTalk_HandleCameraMovement(const CaveTalk_Handle_t *const handle, const CaveTalk_Length_t length)
 {
-    CaveTalk_Error_t error = CAVE_TALK_ERROR_NULL;
+    CaveTalk_Error_t error = CAVE_TALK_ERROR_NONE;
 
-    if (NULL == handle)
+    if ((NULL == handle) || (NULL == handle->buffer))
     {
+        error = CAVE_TALK_ERROR_NULL;
     }
     else
     {
@@ -256,10 +269,11 @@ static CaveTalk_Error_t CaveTalk_HandleCameraMovement(const CaveTalk_Handle_t *c
 
 static CaveTalk_Error_t CaveTalk_HandleLights(const CaveTalk_Handle_t *const handle, const CaveTalk_Length_t length)
 {
-    CaveTalk_Error_t error = CAVE_TALK_ERROR_NULL;
+    CaveTalk_Error_t error = CAVE_TALK_ERROR_NONE;
 
-    if (NULL == handle)
+    if ((NULL == handle) || (NULL == handle->buffer))
     {
+        error = CAVE_TALK_ERROR_NULL;
     }
     else
     {
@@ -271,10 +285,11 @@ static CaveTalk_Error_t CaveTalk_HandleLights(const CaveTalk_Handle_t *const han
 
 static CaveTalk_Error_t CaveTalk_HandleMode(const CaveTalk_Handle_t *const handle, const CaveTalk_Length_t length)
 {
-    CaveTalk_Error_t error = CAVE_TALK_ERROR_NULL;
+    CaveTalk_Error_t error = CAVE_TALK_ERROR_NONE;
 
-    if (NULL == handle)
+    if ((NULL == handle) || (NULL == handle->buffer))
     {
+        error = CAVE_TALK_ERROR_NULL;
     }
     else
     {
