@@ -63,7 +63,11 @@ target_include_directories(CAVeTalk_c
 )
 target_link_libraries(CAVeTalk_c PRIVATE CAVeTalk_c_messages)
 if(CMAKE_CC_COMPILER_ID MATCHES "GNU|Clang")
-    target_compile_options(CAVeTalk_c PRIVATE -Wall -Wextra -Werror -Wpedantic)
+    target_compile_options(CAVeTalk_c
+        PRIVATE
+            -Wall -Wextra -Werror -Wpedantic
+            $<$<CONFIG:Debug>:-g -O0 --coverage>
+    )
 # Add flags for other compilers here
 endif()
 
@@ -112,7 +116,11 @@ target_include_directories(CAVeTalk_cpp
 )
 target_link_libraries(CAVeTalk_cpp PRIVATE CAVeTalk_cpp_messages)
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    target_compile_options(CAVeTalk_cpp PRIVATE -Wall -Wextra -Werror -Wno-missing-requires)
+    target_compile_options(CAVeTalk_cpp
+        PRIVATE
+        -Wall -Wextra -Werror -Wno-missing-requires
+        $<$<CONFIG:Debug>:-g -O0 --coverage>
+    )
 # Add flags for other compilers here
 endif()
 
