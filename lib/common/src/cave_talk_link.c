@@ -30,7 +30,7 @@ static inline uint8_t CaveTalk_GetLowerByte(const uint16_t value);
 static inline uint16_t CaveTalk_GetUpperUint16(const uint32_t value);
 static inline uint16_t CaveTalk_GetLowerUint16(const uint32_t value);
 
-CaveTalk_Error_t CaveTalk_Speak(CaveTalk_LinkHandle_t *const handle,
+CaveTalk_Error_t CaveTalk_Speak(const CaveTalk_LinkHandle_t *const handle,
                                 const CaveTalk_Id_t id,
                                 const void *const data,
                                 const CaveTalk_Length_t length)
@@ -70,7 +70,7 @@ CaveTalk_Error_t CaveTalk_Speak(CaveTalk_LinkHandle_t *const handle,
     return error;
 }
 
-CaveTalk_Error_t CaveTalk_Listen(CaveTalk_LinkHandle_t *const handle,
+CaveTalk_Error_t CaveTalk_Listen(const CaveTalk_LinkHandle_t *const handle,
                                  CaveTalk_Id_t *const id,
                                  void *const data,
                                  const size_t size,
