@@ -1,11 +1,13 @@
 cmake_minimum_required(VERSION 3.30)
-project(CavemanController LANGUAGES C CXX)
+project(CAVeTalk LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fdiagnostics-color=always")
 # Add global flags for other compilers here
 endif()
+
+option(CAVETALK_BUILD_TESTS "Build CAVeTalk tests" OFF)
 
 set(EXTERNAL_DIR ${CMAKE_SOURCE_DIR}/external)
 set(LIB_DIR ${CMAKE_SOURCE_DIR}/lib)
@@ -29,16 +31,16 @@ file(GLOB CAVE_TALK_MESSAGE_SRCS LIST_DIRECTORIES false CONFIGURE_DEPENDS
 ################################################################################
 # C messages
 ################################################################################
-set(C_MESSAGES_OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/CAVeTalk_c_protos)
+set(C_MESSAGES_OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-c_protos)
 file(GLOB CAVE_TALK_C_MESSAGE_SRCS LIST_DIRECTORIES false CONFIGURE_DEPENDS
     "${C_MESSAGES_OUT_DIR}/*.pb.c"
 )
-add_library(CAVeTalk_c_messages)
-target_sources(CAVeTalk_c_messages
+add_library(${PROJECT_NAME}-c_messages)
+target_sources(${PROJECT_NAME}-c_messages
     PRIVATE
         ${CAVE_TALK_C_MESSAGE_SRCS}
 )
-target_include_directories(CAVeTalk_c_messages
+target_include_directories(${PROJECT_NAME}-c_messages
     PUBLIC
         ${C_MESSAGES_OUT_DIR}
 )
@@ -50,20 +52,20 @@ set(C_DIR ${LIB_DIR}/c)
 set(C_INC_DIR ${C_DIR}/inc)
 set(C_SRC_DIR ${C_DIR}/src)
 set(C_SRCS ${C_SRC_DIR}/cave_talk.c)
-add_library(CAVeTalk_c)
-target_sources(CAVeTalk_c
+add_library(${PROJECT_NAME}-c)
+target_sources(${PROJECT_NAME}-c
     PRIVATE
         ${COMMON_SRC}
         ${C_SRCS}
 )
-target_include_directories(CAVeTalk_c
+target_include_directories(${PROJECT_NAME}-c
     PUBLIC
         ${COMMON_INC_DIR}
         ${C_INC_DIR}
 )
-target_link_libraries(CAVeTalk_c PRIVATE CAVeTalk_c_messages)
+target_link_libraries(${PROJECT_NAME}-c PRIVATE ${PROJECT_NAME}-c_messages)
 if(CMAKE_CC_COMPILER_ID MATCHES "GNU|Clang")
-    target_compile_options(CAVeTalk_c
+    target_compile_options(${PROJECT_NAME}-c
         PRIVATE
             -Wall -Wextra -Werror -Wpedantic
             $<$<CONFIG:Debug>:-g -O0 --coverage>
@@ -79,22 +81,22 @@ set(PROTOBUF_INSTALL_DIR ${EXTERNAL_DIR}/protobuf/_build/protobuf-install)
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/protobuf/third_party/abseil-cpp)
 find_package(utf8_range CONFIG REQUIRED HINTS ${PROTOBUF_INSTALL_DIR})
 find_package(Protobuf CONFIG REQUIRED HINTS ${PROTOBUF_INSTALL_DIR})
-set(CPP_MESSAGES_OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/CAVeTalk_cpp_protos)
-add_library(CAVeTalk_cpp_messages)
+set(CPP_MESSAGES_OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-cpp_protos)
+add_library(${PROJECT_NAME}-cpp_messages)
 protobuf_generate(
-	TARGET CAVeTalk_cpp_messages
+	TARGET ${PROJECT_NAME}-cpp_messages
 	LANGUAGE cpp
 	PROTOS ${CAVE_TALK_MESSAGE_SRCS}
 	IMPORT_DIRS ${CAVE_TALK_MESSAGES_DIR}
     PROTOC_OUT_DIR ${CPP_MESSAGES_OUT_DIR}
 )
-target_link_libraries(CAVeTalk_cpp_messages PRIVATE protobuf::libprotobuf)
-target_include_directories(CAVeTalk_cpp_messages
+target_link_libraries(${PROJECT_NAME}-cpp_messages PRIVATE protobuf::libprotobuf)
+target_include_directories(${PROJECT_NAME}-cpp_messages
     PUBLIC
         ${PROTOBUF_INSTALL_DIR}/include
         ${CPP_MESSAGES_OUT_DIR}
 )
-target_compile_options(CAVeTalk_cpp_messages PRIVATE -Wno-missing-requires)
+target_compile_options(${PROJECT_NAME}-cpp_messages PRIVATE -Wno-missing-requires)
 
 ################################################################################
 # C++ library
@@ -103,23 +105,23 @@ set(CPP_DIR ${LIB_DIR}/c++)
 set(CPP_INC_DIR ${CPP_DIR}/inc)
 set(CPP_SRC_DIR ${CPP_DIR}/src)
 set(CPP_SRCS ${CPP_SRC_DIR}/cave_talk.cc)
-add_library(CAVeTalk_cpp)
-target_sources(CAVeTalk_cpp
+add_library(${PROJECT_NAME}-cpp)
+target_sources(${PROJECT_NAME}-cpp
     PRIVATE
         ${COMMON_SRC}
         ${CPP_SRCS}
 )
-target_include_directories(CAVeTalk_cpp
+target_include_directories(${PROJECT_NAME}-cpp
     PUBLIC
         ${COMMON_INC_DIR}
         ${CPP_INC_DIR}
 )
-target_link_libraries(CAVeTalk_cpp PRIVATE CAVeTalk_cpp_messages)
+target_link_libraries(${PROJECT_NAME}-cpp PRIVATE ${PROJECT_NAME}-cpp_messages)
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    target_compile_options(CAVeTalk_cpp
+    target_compile_options(${PROJECT_NAME}-cpp
         PRIVATE
-        -Wall -Wextra -Werror -Wno-missing-requires
-        $<$<CONFIG:Debug>:-g -O0 --coverage>
+            -Wall -Wextra -Werror -Wno-missing-requires
+            $<$<CONFIG:Debug>:-g -O0 --coverage>
     )
 # Add flags for other compilers here
 endif()
@@ -133,3 +135,11 @@ include(${TOOLS_DIR}/cppcheck/cppcheck.cmake)
 set(UNCRUSTIFY_SOURCES ${CPPCHECK_SOURCES})
 set(UNCRUSTIFY_INC_DIRS ${COMMON_INC_DIR} ${CPP_INC_DIR} ${C_INC_DIR})
 include(${TOOLS_DIR}/uncrustify/uncrustify.cmake)
+
+################################################################################
+# Tests
+################################################################################
+if(CAVETALK_BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
+endif()
