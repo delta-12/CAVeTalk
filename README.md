@@ -34,13 +34,13 @@ When building the C version of this library and/or using this library on an embe
 
    `git submodule update --init --recursive`
 
-3. Navigate to the `nanopb` directory
+2. Make the script to generate the Protobuf payloads for C with `nanopb` executable.
 
-   `cd tools/nanopb`
+   `chmod +x tools/nanopb/generate.sh`
 
-4. Run the `generate` script to generate the Protobuf payloads for C with `nanopb`.  This step requires Python3 to be installed.
+3. Run the `generate` script to generate the Protobuf payloads for C with `nanopb`.  This step requires Python3 to be installed.
 
-    `./generate`
+    `./tools/nanopb/generate.sh`
 
 ### C++
 
@@ -77,7 +77,7 @@ Prerequisites
 
 1. Setup Protobufs for the version(s) of the library being built.  See [Protobufs](#protobufs).
 
-2. See the `docs` directory for how to perform static analysis and code formatting. **You must set up cppcheck and uncrustify before configuring CMake.**
+2. See the `docs` directory for how to perform static analysis and code formatting. **You must set up Cppcheck and Uncrustify before configuring CMake.**
 
 3. Configure CMake.
 
@@ -87,9 +87,7 @@ Prerequisites
 
    `cmake --build build`
 
-5. Run the static analysis tools from the root directory
+5. Run the static analysis and code formatting tools.
 
-- cppcheck: `cmake --build build -t cppcheck`
-
-- uncrustify: `cmake --build build -t uncrustify`
-
+   - Cppcheck: `cmake --build build -t cppcheck`
+   - Uncrustify: `cmake --build build -t uncrustify`
