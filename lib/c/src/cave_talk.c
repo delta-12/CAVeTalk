@@ -219,7 +219,17 @@ static CaveTalk_Error_t CaveTalk_HandleOogaBooga(const CaveTalk_Handle_t *const 
     }
     else
     {
-        /* TODO SD-158 */
+        pb_istream_t        istream            = pb_istream_from_buffer(handle->buffer, handle->buffer_size);
+        cave_talk_OogaBooga ooga_booga_message = cave_talk_OogaBooga_init_zero;
+
+        if (!pb_decode(&istream, cave_talk_OogaBooga_fields, &ooga_booga_message))
+        {
+            error = CAVE_TALK_ERROR_PARSE;
+        }
+        else if (NULL != handle->listen_callbacks.hear_ooga_booga)
+        {
+            handle->listen_callbacks.hear_ooga_booga(ooga_booga_message.ooga_booga);
+        }
     }
 
     return error;
@@ -261,7 +271,17 @@ static CaveTalk_Error_t CaveTalk_HandleCameraMovement(const CaveTalk_Handle_t *c
     }
     else
     {
-        /* TODO SD-158 */
+        pb_istream_t             istream                 = pb_istream_from_buffer(handle->buffer, handle->buffer_size);
+        cave_talk_CameraMovement camera_movement_message = cave_talk_CameraMovement_init_zero;
+
+        if (!pb_decode(&istream, cave_talk_CameraMovement_fields, &camera_movement_message))
+        {
+            error = CAVE_TALK_ERROR_PARSE;
+        }
+        else if (NULL != handle->listen_callbacks.hear_camera_movement)
+        {
+            handle->listen_callbacks.hear_camera_movement(camera_movement_message.pan_angle_radians, camera_movement_message.tilt_angle_radians);
+        }
     }
 
     return error;
@@ -277,7 +297,17 @@ static CaveTalk_Error_t CaveTalk_HandleLights(const CaveTalk_Handle_t *const han
     }
     else
     {
-        /* TODO SD-158 */
+        pb_istream_t     istream        = pb_istream_from_buffer(handle->buffer, handle->buffer_size);
+        cave_talk_Lights lights_message = cave_talk_Lights_init_zero;
+
+        if (!pb_decode(&istream, cave_talk_Lights_fields, &lights_message))
+        {
+            error = CAVE_TALK_ERROR_PARSE;
+        }
+        else if (NULL != handle->listen_callbacks.hear_lights)
+        {
+            handle->listen_callbacks.hear_lights(lights_message.headlights);
+        }
     }
 
     return error;
@@ -293,7 +323,17 @@ static CaveTalk_Error_t CaveTalk_HandleMode(const CaveTalk_Handle_t *const handl
     }
     else
     {
-        /* TODO SD-158 */
+        pb_istream_t   istream      = pb_istream_from_buffer(handle->buffer, handle->buffer_size);
+        cave_talk_Mode mode_message = cave_talk_Mode_init_zero;
+
+        if (!pb_decode(&istream, cave_talk_Mode_fields, &mode_message))
+        {
+            error = CAVE_TALK_ERROR_PARSE;
+        }
+        else if (NULL != handle->listen_callbacks.hear_mode)
+        {
+            handle->listen_callbacks.hear_mode(mode_message.manual);
+        }
     }
 
     return error;
