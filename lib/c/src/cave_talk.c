@@ -14,16 +14,60 @@
 #include "cave_talk_link.h"
 #include "cave_talk_types.h"
 
+static CaveTalk_Error_t CaveTalk_HandleOogaBooga(const CaveTalk_Handle_t *const handle, const CaveTalk_Length_t length);
+static CaveTalk_Error_t CaveTalk_HandleMovement(const CaveTalk_Handle_t *const handle, const CaveTalk_Length_t length);
+static CaveTalk_Error_t CaveTalk_HandleCameraMovement(const CaveTalk_Handle_t *const handle, const CaveTalk_Length_t length);
+static CaveTalk_Error_t CaveTalk_HandleLights(const CaveTalk_Handle_t *const handle, const CaveTalk_Length_t length);
+static CaveTalk_Error_t CaveTalk_HandleMode(const CaveTalk_Handle_t *const handle, const CaveTalk_Length_t length);
+
 CaveTalk_Error_t CaveTalk_Hear(const CaveTalk_Handle_t *const handle)
 {
-    CaveTalk_Error_t error = CAVE_TALK_ERROR_NONE;
+    CaveTalk_Error_t error = CAVE_TALK_ERROR_NULL;
 
-    if (NULL == handle)
+    if ((NULL == handle) ||
+        (NULL == handle->buffer) ||
+        (NULL == handle->link_handle.receive) ||
+        (NULL == handle->link_handle.available))
     {
-        error = CAVE_TALK_ERROR_NULL;
     }
+    else
+    {
+        CaveTalk_Id_t     id     = 0U;
+        CaveTalk_Length_t length = 0U;
 
-    /* TODO SD-158 */
+        error = CaveTalk_Listen(&handle->link_handle, &id, handle->buffer, handle->buffer_size, &length);
+
+        if (CAVE_TALK_ERROR_NONE == error)
+        {
+            switch ((cave_talk_Id)id)
+            {
+            case cave_talk_Id_ID_NONE:
+                if (0U != length)
+                {
+                    error = CAVE_TALK_ERROR_ID;
+                }
+                break;
+            case cave_talk_Id_ID_OOGA:
+                error = CaveTalk_HandleOogaBooga(handle, length);
+                break;
+            case cave_talk_Id_ID_MOVEMENT:
+                error = CaveTalk_HandleMovement(handle, length);
+                break;
+            case cave_talk_Id_ID_CAMERA_MOVEMENT:
+                error = CaveTalk_HandleCameraMovement(handle, length);
+                break;
+            case cave_talk_Id_ID_LIGHTS:
+                error = CaveTalk_HandleLights(handle, length);
+                break;
+            case cave_talk_Id_ID_MODE:
+                error = CaveTalk_HandleMode(handle, length);
+                break;
+            default:
+                error = CAVE_TALK_ERROR_ID;
+                break;
+            }
+        }
+    }
 
     return error;
 }
@@ -160,6 +204,81 @@ CaveTalk_Error_t CaveTalk_SpeakMode(const CaveTalk_Handle_t *const handle, const
         {
             error = CaveTalk_Speak(&handle->link_handle, (CaveTalk_Id_t)cave_talk_Id_ID_MODE, handle->buffer, ostream.bytes_written);
         }
+    }
+
+    return error;
+}
+
+static CaveTalk_Error_t CaveTalk_HandleOogaBooga(const CaveTalk_Handle_t *const handle, const CaveTalk_Length_t length)
+{
+    CaveTalk_Error_t error = CAVE_TALK_ERROR_NULL;
+
+    if (NULL == handle)
+    {
+    }
+    else
+    {
+        /* TODO SD-158 */
+    }
+
+    return error;
+}
+
+static CaveTalk_Error_t CaveTalk_HandleMovement(const CaveTalk_Handle_t *const handle, const CaveTalk_Length_t length)
+{
+    CaveTalk_Error_t error = CAVE_TALK_ERROR_NULL;
+
+    if (NULL == handle)
+    {
+    }
+    else
+    {
+        /* TODO SD-158 */
+    }
+
+    return error;
+}
+
+static CaveTalk_Error_t CaveTalk_HandleCameraMovement(const CaveTalk_Handle_t *const handle, const CaveTalk_Length_t length)
+{
+    CaveTalk_Error_t error = CAVE_TALK_ERROR_NULL;
+
+    if (NULL == handle)
+    {
+    }
+    else
+    {
+        /* TODO SD-158 */
+    }
+
+    return error;
+}
+
+static CaveTalk_Error_t CaveTalk_HandleLights(const CaveTalk_Handle_t *const handle, const CaveTalk_Length_t length)
+{
+    CaveTalk_Error_t error = CAVE_TALK_ERROR_NULL;
+
+    if (NULL == handle)
+    {
+    }
+    else
+    {
+        /* TODO SD-158 */
+    }
+
+    return error;
+}
+
+static CaveTalk_Error_t CaveTalk_HandleMode(const CaveTalk_Handle_t *const handle, const CaveTalk_Length_t length)
+{
+    CaveTalk_Error_t error = CAVE_TALK_ERROR_NULL;
+
+    if (NULL == handle)
+    {
+    }
+    else
+    {
+        /* TODO SD-158 */
     }
 
     return error;
