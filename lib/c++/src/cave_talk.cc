@@ -3,12 +3,12 @@
 #include <cstddef>
 #include <functional>
 
-#include "ids.pb.h"
-#include "ooga_booga.pb.h"
-#include "movement.pb.h"
 #include "camera_movement.pb.h"
+#include "ids.pb.h"
 #include "lights.pb.h"
 #include "mode.pb.h"
+#include "movement.pb.h"
+#include "ooga_booga.pb.h"
 
 #include "cave_talk_link.h"
 #include "cave_talk_types.h"
