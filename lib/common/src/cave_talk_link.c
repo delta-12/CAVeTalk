@@ -99,8 +99,6 @@ CaveTalk_Error_t CaveTalk_Listen(const CaveTalk_LinkHandle_t *const handle,
         {
             *id     = CAVE_TALK_ID_NONE;
             *length = 0U;
-
-            error = CAVE_TALK_ERROR_NONE;
         }
         else
         {
@@ -159,7 +157,6 @@ CaveTalk_Error_t CaveTalk_Listen(const CaveTalk_LinkHandle_t *const handle,
             else
             {
                 /* TODO SD-164 check CRC */
-                error = CAVE_TALK_ERROR_NONE;
             }
         }
     }
