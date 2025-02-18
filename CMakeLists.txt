@@ -120,8 +120,8 @@ endif()
 # CI and tools
 ################################################################################
 set(TOOLS_DIR ${CMAKE_SOURCE_DIR}/tools)
-set(CPPCHECK_SOURCES ${COMMON_SRCS} ${CPP_SRCS})
+set(CPPCHECK_SOURCES ${COMMON_SRCS} ${CPP_SRCS} ${C_SRCS})
 include(${TOOLS_DIR}/cppcheck/cppcheck.cmake)
 set(UNCRUSTIFY_SOURCES ${CPPCHECK_SOURCES})
-set(UNCRUSTIFY_INC_DIRS ${COMMON_INC_DIR} ${CPP_INC_DIR})
+set(UNCRUSTIFY_INC_DIRS ${COMMON_INC_DIR} ${CPP_INC_DIR} ${C_INC_DIR})
 include(${TOOLS_DIR}/uncrustify/uncrustify.cmake)
