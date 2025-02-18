@@ -34,13 +34,13 @@ When building the C version of this library and/or using this library on an embe
 
    `git submodule update --init --recursive`
 
-3. Navigate to the `nanopb` directory
+2. Make the script to generate the Protobuf payloads for C with `nanopb` executable.
 
-   `cd tools/nanopb`
+   `chmod +x tools/nanopb/generate.sh`
 
-4. Run the `generate` script to generate the Protobuf payloads for C with `nanopb`.  This step requires Python3 to be installed.
+3. Run the `generate` script to generate the Protobuf payloads for C with `nanopb`.  This step requires Python3 to be installed.
 
-    `./generate`
+    `./tools/nanopb/generate.sh`
 
 ### C++
 

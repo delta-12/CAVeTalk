@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/bin/sh
 
-SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+SCRIPT_DIR=$(dirname "$0")
 ENV_DIR=$SCRIPT_DIR/env
 OUT_DIR=$SCRIPT_DIR/../../build/CAVeTalk_c_protos
 MSG_DIR=$SCRIPT_DIR/../../messages
@@ -10,10 +10,10 @@ NANOPB_DIR=$SCRIPT_DIR/nanopb
 if [ ! -d "$ENV_DIR" ]; then
     # Install nanopb requirements
     python3 -m venv $ENV_DIR
-    source $ENV_DIR/bin/activate
+    . $ENV_DIR/bin/activate
     pip3 install -r $NANOPB_DIR/requirements.txt
 else
-    source $ENV_DIR/bin/activate
+    . $ENV_DIR/bin/activate
 fi
 
 # Generate Protobuf payloads for C
