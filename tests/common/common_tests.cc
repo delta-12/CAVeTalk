@@ -48,7 +48,7 @@ static const CaveTalk_LinkHandle_t kLinkHandle = {
     .available = Available,
 };
 
-TEST(LinkLayerTests, SpeakAndListen)
+TEST(CommonTests, SpeakAndListen)
 {
     uint8_t data_send[] = {0xDE, 0xAD, 0xBE, 0xEF};
     uint8_t data_receive[sizeof(data_send)] = {0U};
@@ -63,3 +63,5 @@ TEST(LinkLayerTests, SpeakAndListen)
     ASSERT_EQ(sizeof(data_send), length);
     ASSERT_THAT(data_receive, testing::ElementsAreArray(data_send));
 }
+
+// TODO SD-215

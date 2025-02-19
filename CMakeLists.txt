@@ -28,7 +28,7 @@ target_include_directories(${PROJECT_NAME}-common
     PUBLIC
         ${COMMON_INC_DIR}
 )
-if(CMAKE_CC_COMPILER_ID MATCHES "GNU|Clang")
+if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(${PROJECT_NAME}-common
         PRIVATE
             -Wall -Wextra -Werror -Wpedantic
@@ -88,7 +88,7 @@ target_link_libraries(${PROJECT_NAME}-c
     PUBLIC
         ${PROJECT_NAME}-common
 )
-if(CMAKE_CC_COMPILER_ID MATCHES "GNU|Clang")
+if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(${PROJECT_NAME}-c
         PRIVATE
             -Wall -Wextra -Werror -Wpedantic
@@ -177,4 +177,40 @@ include(${TOOLS_DIR}/uncrustify/uncrustify.cmake)
 if(CAVETALK_BUILD_TESTS)
     enable_testing()
     add_subdirectory(tests)
+endif()
+
+################################################################################
+# Coverage
+################################################################################
+find_program(GCOVR_PATH gcovr
+    HINTS ~/.local/bin/
+)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    if(GCOVR_PATH)
+        message(STATUS "Found Gcovr at: ${GCOVR_PATH}")
+        set(GCOVR_ARGS -r ${CMAKE_BINARY_DIR} -f ${LIB_DIR} --exclude-throw-branches)
+        if(DEFINED ENV{GCOV_EXECUTABLE})
+            set(GCOVR_ARGS --gcov-executable $ENV{GCOV_EXECUTABLE} ${GCOVR_ARGS})
+        endif()
+        add_custom_target(
+            coverage
+            COMMAND ${GCOVR_PATH} ${GCOVR_ARGS} --html-details --html-theme github.dark-green -o coverage.html
+            COMMENT "Generating code coverage report..."
+            DEPENDS test
+        )
+        add_custom_target(
+            coverage-no-test
+            COMMAND ${GCOVR_PATH} ${GCOVR_ARGS} --html-details --html-theme github.dark-green -o coverage.html
+            COMMENT "Generating code coverage report..."
+        )
+        add_custom_target(
+            sonarqube-coverage
+            COMMAND ${GCOVR_PATH} ${GCOVR_ARGS} --sonarqube -o coverage.xml
+            COMMENT "Generating code coverage report..."
+        )
+    else()
+        message(WARNING "Gcovr not found.")
+    endif()
+else()
+    message(WARNING "Gcovr does not support compiler.")
 endif()
