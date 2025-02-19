@@ -14,8 +14,11 @@ jobs:
           submodules: "recursive"
       - name: Setup
         uses: ./.github/actions/setup
+      - name: Configure release build
+        run: cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCAVETALK_BUILD_TESTS=OFF
+        shell: sh
       - name: Build check
-        run: cmake --build build -j$(nproc)
+        run: cmake --build build -j$(nproc) --target CAVeTalk-c CAVeTalk-cpp
   cppcheck:
     runs-on: ubuntu-latest
     container:
@@ -66,7 +69,7 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
       - name: Build tests
-        run: cmake --build build -j$(nproc) --target CAVeTalk-tests-cpp
+        run: cmake --build build -j$(nproc) --target CAVeTalk-tests-common CAVeTalk-tests-c CAVeTalk-tests-cpp
       - name: Run tests
         run: cmake --build build -j$(nproc) -t test --verbose
       - name: Upload unit tests log
