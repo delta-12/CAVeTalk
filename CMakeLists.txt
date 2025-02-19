@@ -13,12 +13,33 @@ set(EXTERNAL_DIR ${CMAKE_SOURCE_DIR}/external)
 set(LIB_DIR ${CMAKE_SOURCE_DIR}/lib)
 
 ################################################################################
-# Common sources
+# Common library
 ################################################################################
 set(COMMON_DIR ${LIB_DIR}/common)
 set(COMMON_INC_DIR ${COMMON_DIR}/inc)
 set(COMMON_SRC_DIR ${COMMON_DIR}/src)
 set(COMMON_SRCS ${COMMON_SRC_DIR}/cave_talk_link.c)
+add_library(${PROJECT_NAME}-common)
+target_sources(${PROJECT_NAME}-common
+    PRIVATE
+        ${COMMON_SRCS}
+)
+target_include_directories(${PROJECT_NAME}-common
+    PUBLIC
+        ${COMMON_INC_DIR}
+)
+if(CMAKE_CC_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(${PROJECT_NAME}-common
+        PRIVATE
+            -Wall -Wextra -Werror -Wpedantic
+            $<$<CONFIG:Debug>:-g -O0 --coverage>
+    )
+    target_link_options(${PROJECT_NAME}-common
+        PRIVATE
+            --coverage
+    )
+# Add flags for other compilers here
+endif()
 
 ################################################################################
 # Messages sources
@@ -55,20 +76,27 @@ set(C_SRCS ${C_SRC_DIR}/cave_talk.c)
 add_library(${PROJECT_NAME}-c)
 target_sources(${PROJECT_NAME}-c
     PRIVATE
-        ${COMMON_SRC}
         ${C_SRCS}
 )
 target_include_directories(${PROJECT_NAME}-c
     PUBLIC
-        ${COMMON_INC_DIR}
         ${C_INC_DIR}
 )
-target_link_libraries(${PROJECT_NAME}-c PRIVATE ${PROJECT_NAME}-c_messages)
+target_link_libraries(${PROJECT_NAME}-c
+    PRIVATE
+        ${PROJECT_NAME}-c_messages
+    PUBLIC
+        ${PROJECT_NAME}-common
+)
 if(CMAKE_CC_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(${PROJECT_NAME}-c
         PRIVATE
             -Wall -Wextra -Werror -Wpedantic
             $<$<CONFIG:Debug>:-g -O0 --coverage>
+    )
+    target_link_options(${PROJECT_NAME}-c
+        PRIVATE
+            --coverage
     )
 # Add flags for other compilers here
 endif()
@@ -108,20 +136,27 @@ set(CPP_SRCS ${CPP_SRC_DIR}/cave_talk.cc)
 add_library(${PROJECT_NAME}-cpp)
 target_sources(${PROJECT_NAME}-cpp
     PRIVATE
-        ${COMMON_SRC}
         ${CPP_SRCS}
 )
 target_include_directories(${PROJECT_NAME}-cpp
     PUBLIC
-        ${COMMON_INC_DIR}
         ${CPP_INC_DIR}
 )
-target_link_libraries(${PROJECT_NAME}-cpp PRIVATE ${PROJECT_NAME}-cpp_messages)
+target_link_libraries(${PROJECT_NAME}-cpp
+    PRIVATE
+        ${PROJECT_NAME}-cpp_messages
+    PUBLIC
+        ${PROJECT_NAME}-common
+)
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(${PROJECT_NAME}-cpp
         PRIVATE
             -Wall -Wextra -Werror -Wno-missing-requires
             $<$<CONFIG:Debug>:-g -O0 --coverage>
+    )
+    target_link_options(${PROJECT_NAME}-cpp
+        PRIVATE
+            --coverage
     )
 # Add flags for other compilers here
 endif()
