@@ -65,7 +65,7 @@ CaveTalk_Error_t Listener::Listen(void)
     return error;
 }
 
-CaveTalk_Error_t Listener::HandleOogaBooga(CaveTalk_Length_t length)
+CaveTalk_Error_t Listener::HandleOogaBooga(CaveTalk_Length_t length) const
 {
 
     OogaBooga ooga_booga_message;
@@ -82,7 +82,7 @@ CaveTalk_Error_t Listener::HandleOogaBooga(CaveTalk_Length_t length)
     return CAVE_TALK_ERROR_NONE;
 }
 
-CaveTalk_Error_t Listener::HandleMovement(CaveTalk_Length_t length)
+CaveTalk_Error_t Listener::HandleMovement(CaveTalk_Length_t length) const
 {
 
     Movement movement_message;
@@ -100,7 +100,7 @@ CaveTalk_Error_t Listener::HandleMovement(CaveTalk_Length_t length)
     return CAVE_TALK_ERROR_NONE;
 }
 
-CaveTalk_Error_t Listener::HandleCameraMovement(CaveTalk_Length_t length)
+CaveTalk_Error_t Listener::HandleCameraMovement(CaveTalk_Length_t length) const
 {
 
     CameraMovement camera_movement_message;
@@ -118,7 +118,7 @@ CaveTalk_Error_t Listener::HandleCameraMovement(CaveTalk_Length_t length)
     return CAVE_TALK_ERROR_NONE;
 }
 
-CaveTalk_Error_t Listener::HandleLights(CaveTalk_Length_t length)
+CaveTalk_Error_t Listener::HandleLights(CaveTalk_Length_t length) const
 {
 
     Lights lights_message;
@@ -135,7 +135,7 @@ CaveTalk_Error_t Listener::HandleLights(CaveTalk_Length_t length)
     return CAVE_TALK_ERROR_NONE;
 }
 
-CaveTalk_Error_t Listener::HandleMode(CaveTalk_Length_t length)
+CaveTalk_Error_t Listener::HandleMode(CaveTalk_Length_t length) const
 {
 
     Mode mode_message;

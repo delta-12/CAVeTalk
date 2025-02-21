@@ -4,7 +4,7 @@
 #include "ids.pb.h"
 #include "ooga_booga.pb.h"
 
-#include "lib/c++/inc/cave_talk.h"
+#include "cave_talk.h"
 #include "cave_talk_link.h"
 #include "cave_talk_types.h"
 #include "ring_buffer.h"
@@ -14,12 +14,11 @@ static RingBuffer<uint8_t, kMaxMessageLength> ring_buffer;
 
 class MockListenerCallbacks : public cave_talk::ListenerCallbacks{
     public:
-        MOCK_METHOD(void, HearOogaBooga, (const int));
+        MOCK_METHOD(void, HearOogaBooga, (const cave_talk::Say), (override));
         MOCK_METHOD(void, HearMovement, ((const CaveTalk_MetersPerSecond_t), (const CaveTalk_RadiansPerSecond_t)), (override));
-        MOCK_METHOD(void, HearCameraMovement, ((const CaveTalk_Radian_t), (const CaveTalk_Radian_t)));
-        MOCK_METHOD(void, HearLights, (const bool));
-        MOCK_METHOD(void, HearMode, (const bool));
-
+        MOCK_METHOD(void, HearCameraMovement, ((const CaveTalk_Radian_t), (const CaveTalk_Radian_t)), (override));
+        MOCK_METHOD(void, HearLights, (const bool), (override));
+        MOCK_METHOD(void, HearMode, (const bool), (override));
 };
 
 CaveTalk_Error_t Send(const void *const data, const size_t size)
