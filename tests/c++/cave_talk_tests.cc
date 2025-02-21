@@ -12,7 +12,10 @@
 static const std::size_t kMaxMessageLength = 255U;
 static RingBuffer<uint8_t, kMaxMessageLength> ring_buffer;
 
-class MockListenerCallbacks : public cave_talk::ListenerCallbacks{
+cave_talk::ListenerCallbacks::~ListenerCallbacks() = default;
+
+class MockListenerCallbacks : public cave_talk::ListenerCallbacks
+{
     public:
         MOCK_METHOD(void, HearOogaBooga, (const cave_talk::Say), (override));
         MOCK_METHOD(void, HearMovement, ((const CaveTalk_MetersPerSecond_t), (const CaveTalk_RadiansPerSecond_t)), (override));
