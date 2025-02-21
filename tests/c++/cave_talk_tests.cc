@@ -1,3 +1,6 @@
+#include <cstddef>
+#include <functional>
+
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
@@ -22,6 +25,22 @@ class MockListenerCallbacks : public cave_talk::ListenerCallbacks
         MOCK_METHOD(void, HearCameraMovement, ((const CaveTalk_Radian_t), (const CaveTalk_Radian_t)), (override));
         MOCK_METHOD(void, HearLights, (const bool), (override));
         MOCK_METHOD(void, HearMode, (const bool), (override));
+};
+
+std::function<CaveTalk_Error_t(const void *const data, const size_t size)> SendLambda = [](const void *const data, const size_t size)
+{
+    CaveTalk_Error_t error = CAVE_TALK_ERROR_NONE;
+
+    if (size > ring_buffer.Capacity() - ring_buffer.Size())
+    {
+        error = CAVE_TALK_ERROR_INCOMPLETE;
+    }
+    else
+    {
+        ring_buffer.Write(static_cast<const uint8_t *const>(data), size);
+    }
+
+    return error;
 };
 
 CaveTalk_Error_t Send(const void *const data, const size_t size)
@@ -62,28 +81,26 @@ static const CaveTalk_LinkHandle_t kLinkHandle = {
 
 TEST(CaveTalkCppTests, SpeakListenOogaBooga){
 
-    std::vector<uint8_t>* data_receive = new std::vector<uint8_t>{0U};
+    uint8_t data_receive[10U] = {0U};
     CaveTalk_Id_t id = 0U;
     CaveTalk_Length_t length = 0U;
 
     MockListenerCallbacks mock_calls;
-    cave_talk::Talker* roverMouth;
+    cave_talk::Talker roverMouth(SendLambda);
 
     ring_buffer.Clear();
 
-    ASSERT_EQ(CAVE_TALK_ERROR_NONE, roverMouth->SpeakOogaBooga(cave_talk::SAY_OOGA));
-    ASSERT_EQ(CAVE_TALK_ERROR_NONE, CaveTalk_Listen(&kLinkHandle, &id, static_cast<void *>(data_receive->data()), sizeof(data_receive), &length));
+    ASSERT_EQ(CAVE_TALK_ERROR_NONE, roverMouth.SpeakOogaBooga(cave_talk::SAY_OOGA));
+    ASSERT_EQ(CAVE_TALK_ERROR_NONE, CaveTalk_Listen(&kLinkHandle, &id, static_cast<void *>(data_receive), sizeof(data_receive), &length));
     EXPECT_CALL(mock_calls, HearOogaBooga(cave_talk::SAY_OOGA));
     ASSERT_EQ(cave_talk::ID_OOGA, id);
 
     ring_buffer.Clear();
 
-    ASSERT_EQ(CAVE_TALK_ERROR_NONE, roverMouth->SpeakOogaBooga(cave_talk::SAY_BOOGA));
-    ASSERT_EQ(CAVE_TALK_ERROR_NONE, CaveTalk_Listen(&kLinkHandle, &id, static_cast<void *>(data_receive->data()), sizeof(data_receive), &length));
+    ASSERT_EQ(CAVE_TALK_ERROR_NONE, roverMouth.SpeakOogaBooga(cave_talk::SAY_BOOGA));
+    ASSERT_EQ(CAVE_TALK_ERROR_NONE, CaveTalk_Listen(&kLinkHandle, &id, static_cast<void *>(data_receive), sizeof(data_receive), &length));
     EXPECT_CALL(mock_calls, HearOogaBooga(cave_talk::SAY_OOGA));
     ASSERT_EQ(cave_talk::ID_OOGA, id);
-
-
 }
 
 TEST(CaveTalkCppTests, SpeakListenMovement){
