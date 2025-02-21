@@ -4,7 +4,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include "ids.pb.h"
+// #include "ids.pb.h"
 #include "ooga_booga.pb.h"
 
 #include "cave_talk.h"
@@ -27,21 +27,6 @@ class MockListenerCallbacks : public cave_talk::ListenerCallbacks
         MOCK_METHOD(void, HearMode, (const bool), (override));
 };
 
-std::function<CaveTalk_Error_t(const void *const data, const size_t size)> SendLambda = [](const void *const data, const size_t size)
-{
-    CaveTalk_Error_t error = CAVE_TALK_ERROR_NONE;
-
-    if (size > ring_buffer.Capacity() - ring_buffer.Size())
-    {
-        error = CAVE_TALK_ERROR_INCOMPLETE;
-    }
-    else
-    {
-        ring_buffer.Write(static_cast<const uint8_t *const>(data), size);
-    }
-
-    return error;
-};
 
 CaveTalk_Error_t Send(const void *const data, const size_t size)
 {    
@@ -66,6 +51,7 @@ CaveTalk_Error_t Receive(void *const data, const size_t size, size_t *const byte
     return CAVE_TALK_ERROR_NONE;
 }
 
+
 CaveTalk_Error_t Available(size_t *const bytes_available)
 {
     *bytes_available = ring_buffer.Capacity() - ring_buffer.Size();
@@ -73,146 +59,146 @@ CaveTalk_Error_t Available(size_t *const bytes_available)
     return CAVE_TALK_ERROR_NONE;
 }
 
-static const CaveTalk_LinkHandle_t kLinkHandle = {
-    .send      = Send,
-    .receive   = Receive,
-    .available = Available,
-};
+// static const CaveTalk_LinkHandle_t kLinkHandle = {
+//     .send      = Send,
+//     .receive   = Receive,
+//     .available = Available,
+// };
 
 TEST(CaveTalkCppTests, SpeakListenOogaBooga){
 
-    uint8_t data_receive[10U] = {0U};
+    uint8_t data_receive[255U] = {0U};
     CaveTalk_Id_t id = 0U;
     CaveTalk_Length_t length = 0U;
 
-    MockListenerCallbacks mock_calls;
-    cave_talk::Talker roverMouth(SendLambda);
+    std::shared_ptr<MockListenerCallbacks> mock_listen_callbacks = std::make_shared<MockListenerCallbacks>();
+    cave_talk::Talker roverMouth(Send);
+    cave_talk::Listener roverEars(Receive, Available, mock_listen_callbacks);
 
     ring_buffer.Clear();
 
     ASSERT_EQ(CAVE_TALK_ERROR_NONE, roverMouth.SpeakOogaBooga(cave_talk::SAY_OOGA));
-    ASSERT_EQ(CAVE_TALK_ERROR_NONE, CaveTalk_Listen(&kLinkHandle, &id, static_cast<void *>(data_receive), sizeof(data_receive), &length));
-    EXPECT_CALL(mock_calls, HearOogaBooga(cave_talk::SAY_OOGA));
-    ASSERT_EQ(cave_talk::ID_OOGA, id);
+    EXPECT_CALL(*mock_listen_callbacks.get(), HearOogaBooga(cave_talk::SAY_OOGA)).Times(1);
+    ASSERT_EQ(CAVE_TALK_ERROR_NONE, roverEars.Listen());
 
     ring_buffer.Clear();
 
     ASSERT_EQ(CAVE_TALK_ERROR_NONE, roverMouth.SpeakOogaBooga(cave_talk::SAY_BOOGA));
-    ASSERT_EQ(CAVE_TALK_ERROR_NONE, CaveTalk_Listen(&kLinkHandle, &id, static_cast<void *>(data_receive), sizeof(data_receive), &length));
-    EXPECT_CALL(mock_calls, HearOogaBooga(cave_talk::SAY_OOGA));
-    ASSERT_EQ(cave_talk::ID_OOGA, id);
+    EXPECT_CALL(*mock_listen_callbacks.get(), HearOogaBooga(cave_talk::SAY_BOOGA)).Times(1);
+    ASSERT_EQ(CAVE_TALK_ERROR_NONE, roverEars.Listen());
+
 }
 
 TEST(CaveTalkCppTests, SpeakListenMovement){
 
-    std::vector<uint8_t>* data_receive = new std::vector<uint8_t>{0U};
+    uint8_t data_receive[255U] = {0U};
     CaveTalk_Id_t id = 0U;
     CaveTalk_Length_t length = 0U;
 
-    MockListenerCallbacks mock_calls;
-    cave_talk::Talker* roverMouth;
+    std::shared_ptr<MockListenerCallbacks> mock_listen_callbacks = std::make_shared<MockListenerCallbacks>();
+    cave_talk::Talker roverMouth(Send);
+    cave_talk::Listener roverEars(Receive, Available, mock_listen_callbacks);
 
     ring_buffer.Clear();
 
-    ASSERT_EQ(CAVE_TALK_ERROR_NONE, roverMouth->SpeakMovement(2.5, 1.7));
-    ASSERT_EQ(CAVE_TALK_ERROR_NONE, CaveTalk_Listen(&kLinkHandle, &id, static_cast<void *>(data_receive->data()), sizeof(data_receive), &length));
-    EXPECT_CALL(mock_calls, HearMovement(2.5, 1.7));
-    ASSERT_EQ(cave_talk::ID_MOVEMENT, id);
+    ASSERT_EQ(CAVE_TALK_ERROR_NONE, roverMouth.SpeakMovement(1.0, 2.5));
+    EXPECT_CALL(*mock_listen_callbacks.get(), HearMovement(1.0, 2.5)).Times(1);
+    ASSERT_EQ(CAVE_TALK_ERROR_NONE, roverEars.Listen());
 
     ring_buffer.Clear();
 
-    ASSERT_EQ(CAVE_TALK_ERROR_NONE, roverMouth->SpeakMovement(0, 6));
-    ASSERT_EQ(CAVE_TALK_ERROR_NONE, CaveTalk_Listen(&kLinkHandle, &id, static_cast<void *>(data_receive->data()), sizeof(data_receive), &length));
-    EXPECT_CALL(mock_calls, HearMovement(0, 6));
-    ASSERT_EQ(cave_talk::ID_MOVEMENT, id);
+    ASSERT_EQ(CAVE_TALK_ERROR_NONE, roverMouth.SpeakMovement(0, 6));
+    EXPECT_CALL(*mock_listen_callbacks.get(), HearMovement(0, 6)).Times(1);
+    ASSERT_EQ(CAVE_TALK_ERROR_NONE, roverEars.Listen());
 
     ring_buffer.Clear();
 
-    ASSERT_EQ(CAVE_TALK_ERROR_NONE, roverMouth->SpeakMovement(6, 0));
-    ASSERT_EQ(CAVE_TALK_ERROR_NONE, CaveTalk_Listen(&kLinkHandle, &id, static_cast<void *>(data_receive->data()), sizeof(data_receive), &length));
-    EXPECT_CALL(mock_calls, HearMovement(6, 0));
-    ASSERT_EQ(cave_talk::ID_MOVEMENT, id);
+    ASSERT_EQ(CAVE_TALK_ERROR_NONE, roverMouth.SpeakMovement(6.72, 0));
+    EXPECT_CALL(*mock_listen_callbacks.get(), HearMovement(6.72, 0)).Times(1);
+    ASSERT_EQ(CAVE_TALK_ERROR_NONE, roverEars.Listen());
+
+    ring_buffer.Clear();
+
+    ASSERT_EQ(CAVE_TALK_ERROR_NONE, roverMouth.SpeakMovement(-1.005, -2));
+    EXPECT_CALL(*mock_listen_callbacks.get(), HearMovement(-1.005, -2)).Times(1);
+    ASSERT_EQ(CAVE_TALK_ERROR_NONE, roverEars.Listen());
     
 }
 
 TEST(CaveTalkCppTests, SpeakListenCameraMovement){
 
-    std::vector<uint8_t>* data_receive = new std::vector<uint8_t>{0U};
+    uint8_t data_receive[255U] = {0U};
     CaveTalk_Id_t id = 0U;
     CaveTalk_Length_t length = 0U;
 
-    MockListenerCallbacks mock_calls;
-    cave_talk::Talker* roverMouth;
+    std::shared_ptr<MockListenerCallbacks> mock_listen_callbacks = std::make_shared<MockListenerCallbacks>();
+    cave_talk::Talker roverMouth(Send);
+    cave_talk::Listener roverEars(Receive, Available, mock_listen_callbacks);
 
     ring_buffer.Clear();
 
-    ASSERT_EQ(CAVE_TALK_ERROR_NONE, roverMouth->SpeakCameraMovement(2.5, 1.7));
-    ASSERT_EQ(CAVE_TALK_ERROR_NONE, CaveTalk_Listen(&kLinkHandle, &id, static_cast<void *>(data_receive->data()), sizeof(data_receive), &length));
-    EXPECT_CALL(mock_calls, HearCameraMovement(2.5, 1.7));
-    ASSERT_EQ(cave_talk::ID_CAMERA_MOVEMENT, id);
+    ASSERT_EQ(CAVE_TALK_ERROR_NONE, roverMouth.SpeakCameraMovement(0.0002, 6.28453));
+    EXPECT_CALL(*mock_listen_callbacks.get(), HearCameraMovement(0.0002, 6.28453)).Times(1);
+    ASSERT_EQ(CAVE_TALK_ERROR_NONE, roverEars.Listen());
 
     ring_buffer.Clear();
 
-    ASSERT_EQ(CAVE_TALK_ERROR_NONE, roverMouth->SpeakCameraMovement(0, 6));
-    ASSERT_EQ(CAVE_TALK_ERROR_NONE, CaveTalk_Listen(&kLinkHandle, &id, static_cast<void *>(data_receive->data()), sizeof(data_receive), &length));
-    EXPECT_CALL(mock_calls, HearCameraMovement(0, 6));
-    ASSERT_EQ(cave_talk::ID_CAMERA_MOVEMENT, id);
+    ASSERT_EQ(CAVE_TALK_ERROR_NONE, roverMouth.SpeakCameraMovement(-200.20, 0));
+    EXPECT_CALL(*mock_listen_callbacks.get(), HearCameraMovement(-200.20, 0)).Times(1);
+    ASSERT_EQ(CAVE_TALK_ERROR_NONE, roverEars.Listen());
 
     ring_buffer.Clear();
 
-    ASSERT_EQ(CAVE_TALK_ERROR_NONE, roverMouth->SpeakCameraMovement(6, 0));
-    ASSERT_EQ(CAVE_TALK_ERROR_NONE, CaveTalk_Listen(&kLinkHandle, &id, static_cast<void *>(data_receive->data()), sizeof(data_receive), &length));
-    EXPECT_CALL(mock_calls, HearCameraMovement(6, 0));
-    ASSERT_EQ(cave_talk::ID_CAMERA_MOVEMENT, id);
+    ASSERT_EQ(CAVE_TALK_ERROR_NONE, roverMouth.SpeakCameraMovement(1, -6.28453));
+    EXPECT_CALL(*mock_listen_callbacks.get(), HearCameraMovement(1, -6.28453)).Times(1);
+    ASSERT_EQ(CAVE_TALK_ERROR_NONE, roverEars.Listen());
     
 }
 
 TEST(CaveTalkCppTests, SpeakListenLights){
 
-    std::vector<uint8_t>* data_receive = new std::vector<uint8_t>{0U};
+    uint8_t data_receive[255U] = {0U};
     CaveTalk_Id_t id = 0U;
     CaveTalk_Length_t length = 0U;
 
-    MockListenerCallbacks mock_calls;
-    cave_talk::Talker* roverMouth;
+    std::shared_ptr<MockListenerCallbacks> mock_listen_callbacks = std::make_shared<MockListenerCallbacks>();
+    cave_talk::Talker roverMouth(Send);
+    cave_talk::Listener roverEars(Receive, Available, mock_listen_callbacks);
 
     ring_buffer.Clear();
 
-    ASSERT_EQ(CAVE_TALK_ERROR_NONE, roverMouth->SpeakLights(true));
-    ASSERT_EQ(CAVE_TALK_ERROR_NONE, CaveTalk_Listen(&kLinkHandle, &id, static_cast<void *>(data_receive->data()), sizeof(data_receive), &length));
-    EXPECT_CALL(mock_calls, HearLights(true));
-    ASSERT_EQ(cave_talk::ID_LIGHTS, id);
+    ASSERT_EQ(CAVE_TALK_ERROR_NONE, roverMouth.SpeakLights(true));
+    EXPECT_CALL(*mock_listen_callbacks.get(), HearLights(true)).Times(1);
+    ASSERT_EQ(CAVE_TALK_ERROR_NONE, roverEars.Listen());
 
     ring_buffer.Clear();
 
-    ASSERT_EQ(CAVE_TALK_ERROR_NONE, roverMouth->SpeakLights(false));
-    ASSERT_EQ(CAVE_TALK_ERROR_NONE, CaveTalk_Listen(&kLinkHandle, &id, static_cast<void *>(data_receive->data()), sizeof(data_receive), &length));
-    EXPECT_CALL(mock_calls, HearLights(false));
-    ASSERT_EQ(cave_talk::ID_LIGHTS, id);
+    ASSERT_EQ(CAVE_TALK_ERROR_NONE, roverMouth.SpeakLights(false));
+    EXPECT_CALL(*mock_listen_callbacks.get(), HearLights(false)).Times(1);
+    ASSERT_EQ(CAVE_TALK_ERROR_NONE, roverEars.Listen());
     
 }
 
 TEST(CaveTalkCppTests, SpeakListenMode){
 
-    std::vector<uint8_t>* data_receive = new std::vector<uint8_t>{0U};
+    uint8_t data_receive[255U] = {0U};
     CaveTalk_Id_t id = 0U;
     CaveTalk_Length_t length = 0U;
 
-    MockListenerCallbacks mock_calls;
-    cave_talk::Talker* roverMouth;
+    std::shared_ptr<MockListenerCallbacks> mock_listen_callbacks = std::make_shared<MockListenerCallbacks>();
+    cave_talk::Talker roverMouth(Send);
+    cave_talk::Listener roverEars(Receive, Available, mock_listen_callbacks);
 
     ring_buffer.Clear();
 
-    ASSERT_EQ(CAVE_TALK_ERROR_NONE, roverMouth->SpeakMode(true));
-    ASSERT_EQ(CAVE_TALK_ERROR_NONE, CaveTalk_Listen(&kLinkHandle, &id, static_cast<void *>(data_receive->data()), sizeof(data_receive), &length));
-    EXPECT_CALL(mock_calls, HearMode(true));
-    ASSERT_EQ(cave_talk::ID_MODE, id);
+    ASSERT_EQ(CAVE_TALK_ERROR_NONE, roverMouth.SpeakMode(true));
+    EXPECT_CALL(*mock_listen_callbacks.get(), HearMode(true)).Times(1);
+    ASSERT_EQ(CAVE_TALK_ERROR_NONE, roverEars.Listen());
 
     ring_buffer.Clear();
 
-    ASSERT_EQ(CAVE_TALK_ERROR_NONE, roverMouth->SpeakMode(false));
-    ASSERT_EQ(CAVE_TALK_ERROR_NONE, CaveTalk_Listen(&kLinkHandle, &id, static_cast<void *>(data_receive->data()), sizeof(data_receive), &length));
-    EXPECT_CALL(mock_calls, HearMode(false));
-    ASSERT_EQ(cave_talk::ID_MODE, id);
+    ASSERT_EQ(CAVE_TALK_ERROR_NONE, roverMouth.SpeakMode(false));
+    EXPECT_CALL(*mock_listen_callbacks.get(), HearMode(false)).Times(1);
+    ASSERT_EQ(CAVE_TALK_ERROR_NONE, roverEars.Listen());
     
 }
