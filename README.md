@@ -93,10 +93,14 @@ Prerequisites
 
    `cmake --build build`
 
-6. If the project was configured to build tests, run the tests.
+6. Publish the library package files to `usr/local`.
+
+   `cmake --install build`
+
+7. If the project was configured to build tests, run the tests.
 
    `cmake --build build -t test`
 
-7. If the project was configured to build tests and Gcovr is installed, generate a coverage report.  The coverage report can be found in the `build` directory at `coverage.html`. 
+8. If the project was configured to build tests and Gcovr is installed, generate a coverage report.  The coverage report can be found in the `build` directory at `coverage.html`. 
 
    `cmake --build build -t coverage-no-test` or `cmake --build build -t coverage` to run the tests and generate the coverage report in a single command

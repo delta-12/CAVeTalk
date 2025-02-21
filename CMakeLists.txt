@@ -24,9 +24,11 @@ target_sources(${PROJECT_NAME}-common
     PRIVATE
         ${COMMON_SRCS}
 )
+include(GNUInstallDirs)
 target_include_directories(${PROJECT_NAME}-common
     PUBLIC
-        ${COMMON_INC_DIR}
+        "$<BUILD_INTERFACE:${COMMON_INC_DIR}>"
+        "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
 )
 if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(${PROJECT_NAME}-common
@@ -40,6 +42,36 @@ if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
     )
 # Add flags for other compilers here
 endif()
+
+install(TARGETS ${PROJECT_NAME}-common
+    EXPORT ${PROJECT_NAME}-commonTargets
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+install(FILES 
+    ${COMMON_INC_DIR}/cave_talk_link.h  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/c)
+
+install(EXPORT ${PROJECT_NAME}-commonTargets
+    FILE ${PROJECT_NAME}-commonTargets.cmake
+    NAMESPACE ${PROJECT_NAME}-common::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}-common
+)
+
+# include the package config helpers and generate the file below
+include(CMakePackageConfigHelpers)
+
+configure_package_config_file(${CMAKE_CURRENT_LIST_DIR}/Config-common.cmake.in
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-commonConfig.cmake"
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}-common
+)
+
+install(FILES
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-commonConfig.cmake"
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}-common
+)
 
 ################################################################################
 # Messages sources
@@ -78,15 +110,17 @@ target_sources(${PROJECT_NAME}-c
     PRIVATE
         ${C_SRCS}
 )
+include(GNUInstallDirs)
 target_include_directories(${PROJECT_NAME}-c
     PUBLIC
-        ${C_INC_DIR}
+        "$<BUILD_INTERFACE:${C_INC_DIR}>"
+        "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
 )
 target_link_libraries(${PROJECT_NAME}-c
     PRIVATE
-        ${PROJECT_NAME}-c_messages
+        "$<BUILD_INTERFACE:${PROJECT_NAME}-c_messages>"
     PUBLIC
-        ${PROJECT_NAME}-common
+         "$<BUILD_INTERFACE:${PROJECT_NAME}-common>"
 )
 if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(${PROJECT_NAME}-c
@@ -100,6 +134,36 @@ if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
     )
 # Add flags for other compilers here
 endif()
+
+install(TARGETS ${PROJECT_NAME}-c
+    EXPORT ${PROJECT_NAME}-cTargets
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+install(FILES 
+    ${C_INC_DIR}/cave_talk.h  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/c)
+
+install(EXPORT ${PROJECT_NAME}-cTargets
+    FILE ${PROJECT_NAME}-cTargets.cmake
+    NAMESPACE ${PROJECT_NAME}-c::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}-c
+)
+
+# include the package config helpers and generate the file below
+include(CMakePackageConfigHelpers)
+
+configure_package_config_file(${CMAKE_CURRENT_LIST_DIR}/Config-c.cmake.in
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-cConfig.cmake"
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}-c
+)
+
+install(FILES
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-cConfig.cmake"
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}-c
+)
 
 ################################################################################
 # C++ messages
@@ -138,15 +202,17 @@ target_sources(${PROJECT_NAME}-cpp
     PRIVATE
         ${CPP_SRCS}
 )
+include(GNUInstallDirs)
 target_include_directories(${PROJECT_NAME}-cpp
     PUBLIC
-        ${CPP_INC_DIR}
+        "$<BUILD_INTERFACE:${CPP_INC_DIR}>"
+        "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
 )
 target_link_libraries(${PROJECT_NAME}-cpp
     PRIVATE
-        ${PROJECT_NAME}-cpp_messages
+        "$<BUILD_INTERFACE:${PROJECT_NAME}-cpp_messages>"
     PUBLIC
-        ${PROJECT_NAME}-common
+        "$<BUILD_INTERFACE:${PROJECT_NAME}-common>"
 )
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(${PROJECT_NAME}-cpp
@@ -160,6 +226,36 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     )
 # Add flags for other compilers here
 endif()
+
+install(TARGETS ${PROJECT_NAME}-cpp
+    EXPORT ${PROJECT_NAME}-cppTargets
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+install(FILES 
+    ${CPP_INC_DIR}/cave_talk.h  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/c++)
+
+install(EXPORT ${PROJECT_NAME}-cppTargets
+    FILE ${PROJECT_NAME}-cppTargets.cmake
+    NAMESPACE ${PROJECT_NAME}-cpp::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}-cpp
+)
+
+# include the package config helpers and generate the file below
+include(CMakePackageConfigHelpers)
+
+configure_package_config_file(${CMAKE_CURRENT_LIST_DIR}/Config-cpp.cmake.in
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-cppConfig.cmake"
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}-cpp
+)
+
+install(FILES
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-cppConfig.cmake"
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}-cpp
+)
 
 ################################################################################
 # CI and tools
