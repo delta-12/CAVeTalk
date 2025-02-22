@@ -50,9 +50,13 @@ CaveTalk_Error_t CaveTalk_Speak(const CaveTalk_LinkHandle_t *const handle,
         /* TODO SD-164 calculate CRC */
         CaveTalk_Crc_t crc = 0U;
 
-        /* TODO SD-182 determine error behavior */
         /* Send header */
         error = handle->send(header, sizeof(header));
+
+        
+        if(CAVE_TALK_ERROR_SOCKET_CLOSED == error)
+        { //nothing can get through if socket is closed
+        }
 
         /* Send payload */
         if (CAVE_TALK_ERROR_NONE == error)
@@ -77,6 +81,7 @@ CaveTalk_Error_t CaveTalk_Listen(const CaveTalk_LinkHandle_t *const handle,
                                  CaveTalk_Length_t *const length)
 {
     CaveTalk_Error_t error = CAVE_TALK_ERROR_NULL;
+    CaveTalk_Version_t version;
 
     if ((NULL == handle) ||
         (NULL == handle->receive) ||
@@ -109,8 +114,13 @@ CaveTalk_Error_t CaveTalk_Listen(const CaveTalk_LinkHandle_t *const handle,
             *id     = CAVE_TALK_ID_NONE;
             *length = 0U;
 
-            /* TODO SD-183 determine error behavior */
-            /* TODO SD-184 check version */
+            version = header[CAVE_TALK_VERSION_INDEX];
+            if(CAVE_TALK_VERSION != version)
+            {
+                error = CAVE_TALK_ERROR_VERSION;
+            }
+
+
             /* Receive header */
             error   = handle->receive(header, sizeof(header), &bytes_received);
             *id     = header[CAVE_TALK_ID_INDEX];
@@ -119,6 +129,16 @@ CaveTalk_Error_t CaveTalk_Listen(const CaveTalk_LinkHandle_t *const handle,
             /* Receive payload */
             if (CAVE_TALK_ERROR_NONE != error)
             {
+                //flush data buffer
+                size_t remaining_bytes = *length;
+                size_t byte_thrown = 0U;
+                uint8_t throwout_buffer[1U] = {0U};
+                CaveTalk_Error_t throwout_error = CAVE_TALK_ERROR_NONE;
+
+                while((remaining_bytes > 0) && (CAVE_TALK_ERROR_NONE != throwout_error)){
+                    throwout_error = handle->receive(throwout_buffer, sizeof(throwout_buffer), &byte_thrown);
+                    remaining_bytes -= byte_thrown;
+                }
             }
             else if (CAVE_TALK_HEADER_SIZE != bytes_received)
             {
@@ -136,6 +156,16 @@ CaveTalk_Error_t CaveTalk_Listen(const CaveTalk_LinkHandle_t *const handle,
             /* Receive CRC */
             if (CAVE_TALK_ERROR_NONE != error)
             {
+                size_t remaining_bytes = sizeof(crc);
+                size_t byte_thrown = 0U;
+                uint8_t throwout_buffer[1U] = {0U};
+                CaveTalk_Error_t throwout_error = CAVE_TALK_ERROR_NONE;
+
+                while((remaining_bytes > 0) && (CAVE_TALK_ERROR_NONE != throwout_error))
+                {
+                    throwout_error = handle->receive(throwout_buffer, sizeof(throwout_buffer), &byte_thrown);
+                    remaining_bytes -= byte_thrown;
+                }
             }
             else if (*length != bytes_received)
             {
