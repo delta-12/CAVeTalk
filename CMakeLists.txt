@@ -63,6 +63,7 @@ target_sources(${PROJECT_NAME}-c_messages
 )
 target_include_directories(${PROJECT_NAME}-c_messages
     PUBLIC
+        ${PROTOBUF_INSTALL_DIR}/include
         ${C_MESSAGES_OUT_DIR}
 )
 
@@ -83,9 +84,8 @@ target_include_directories(${PROJECT_NAME}-c
         ${C_INC_DIR}
 )
 target_link_libraries(${PROJECT_NAME}-c
-    PRIVATE
-        ${PROJECT_NAME}-c_messages
     PUBLIC
+        ${PROJECT_NAME}-c_messages
         ${PROJECT_NAME}-common
 )
 if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
