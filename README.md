@@ -32,7 +32,11 @@ When building the C version of this library and/or using this library on an embe
 
 1. Initialize and update submodules
 
-   `git submodule update --init --recursive`
+   `git submodule update --init --recursive `
+
+   - Use this command to see the progress of each submodule pull
+
+      `git submodule update --init --recursive --progress`
 
 2. Make the script to generate the Protobuf payloads for C with `nanopb` executable.
 
@@ -49,6 +53,10 @@ When building the C++ version of this library, follow these steps to setup Proto
 1. Initialize and update submodules
 
    `git submodule update --init --recursive`
+
+   - Use this command to see the progress of each submodule pull
+
+      `git submodule update --init --recursive --progress`
 
 2. Navigate to the `protobuf` directory
 

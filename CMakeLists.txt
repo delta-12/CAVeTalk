@@ -143,10 +143,9 @@ target_include_directories(${PROJECT_NAME}-cpp
         ${CPP_INC_DIR}
 )
 target_link_libraries(${PROJECT_NAME}-cpp
-    PRIVATE
-        ${PROJECT_NAME}-cpp_messages
     PUBLIC
         ${PROJECT_NAME}-common
+        ${PROJECT_NAME}-cpp_messages
 )
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(${PROJECT_NAME}-cpp
