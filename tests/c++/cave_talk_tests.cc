@@ -4,7 +4,6 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-// #include "ids.pb.h"
 #include "ooga_booga.pb.h"
 
 #include "cave_talk.h"
@@ -59,11 +58,6 @@ CaveTalk_Error_t Available(size_t *const bytes_available)
     return CAVE_TALK_ERROR_NONE;
 }
 
-// static const CaveTalk_LinkHandle_t kLinkHandle = {
-//     .send      = Send,
-//     .receive   = Receive,
-//     .available = Available,
-// };
 
 TEST(CaveTalkCppTests, SpeakListenOogaBooga){
 

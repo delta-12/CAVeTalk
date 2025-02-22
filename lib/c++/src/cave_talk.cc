@@ -165,7 +165,6 @@ CaveTalk_Error_t Talker::SpeakOogaBooga(const Say ooga_booga)
     ooga_booga_message.set_ooga_booga(ooga_booga);
 
     std::size_t length = ooga_booga_message.ByteSizeLong();
-    // message_buffer_.reserve(length);
     ooga_booga_message.SerializeToArray(message_buffer_.data(), message_buffer_.max_size());
 
     return CaveTalk_Speak(&link_handle_, static_cast<CaveTalk_Id_t>(ID_OOGA), message_buffer_.data(), length);
@@ -178,7 +177,6 @@ CaveTalk_Error_t Talker::SpeakMovement(const CaveTalk_MetersPerSecond_t speed, c
     movement_message.set_turn_rate_radians_per_second(turn_rate);
 
     std::size_t length = movement_message.ByteSizeLong();
-    // message_buffer_.reserve(length);
     movement_message.SerializeToArray(message_buffer_.data(), message_buffer_.max_size());
 
     return CaveTalk_Speak(&link_handle_, static_cast<CaveTalk_Id_t>(ID_MOVEMENT), message_buffer_.data(), length);
@@ -191,7 +189,6 @@ CaveTalk_Error_t Talker::SpeakCameraMovement(const CaveTalk_Radian_t pan, const 
     camera_movement_message.set_tilt_angle_radians(tilt);
 
     std::size_t length = camera_movement_message.ByteSizeLong();
-    // message_buffer_.reserve(length);
     camera_movement_message.SerializeToArray(message_buffer_.data(), message_buffer_.max_size());
 
     return CaveTalk_Speak(&link_handle_, static_cast<CaveTalk_Id_t>(ID_CAMERA_MOVEMENT), message_buffer_.data(), length);
@@ -203,7 +200,6 @@ CaveTalk_Error_t Talker::SpeakLights(const bool headlights)
     lights_message.set_headlights(headlights);
 
     std::size_t length = lights_message.ByteSizeLong();
-    // message_buffer_.reserve(length);
     lights_message.SerializeToArray(message_buffer_.data(), message_buffer_.max_size());
 
     return CaveTalk_Speak(&link_handle_, static_cast<CaveTalk_Id_t>(ID_LIGHTS), message_buffer_.data(), length);
@@ -215,7 +211,6 @@ CaveTalk_Error_t Talker::SpeakMode(const bool manual)
     mode_message.set_manual(manual);
 
     std::size_t length = mode_message.ByteSizeLong();
-    // message_buffer_.reserve(length);
     mode_message.SerializeToArray(message_buffer_.data(), message_buffer_.max_size());
 
     return CaveTalk_Speak(&link_handle_, static_cast<CaveTalk_Id_t>(ID_MODE), message_buffer_.data(), length);
