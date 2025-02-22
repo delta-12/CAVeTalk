@@ -215,7 +215,7 @@ CaveTalk_Error_t CaveTalk_SpeakMode(const CaveTalk_Handle_t *const handle, const
 }
 
 CaveTalk_Error_t CaveTalk_SpeakOdometry(const CaveTalk_Handle_t *const handle,
-                                        const CaveTalk_MetersPerSecondSquared_t x_accel, 
+                                        const CaveTalk_MetersPerSecondSquared_t x_accel,
                                         const CaveTalk_MetersPerSecondSquared_t y_accel,
                                         const CaveTalk_MetersPerSecondSquared_t z_accel,
                                         const CaveTalk_RadiansPerSecond_t roll,
@@ -233,19 +233,19 @@ CaveTalk_Error_t CaveTalk_SpeakOdometry(const CaveTalk_Handle_t *const handle,
     }
     else
     {
-        pb_ostream_t   ostream      = pb_ostream_from_buffer(handle->buffer, handle->buffer_size);
+        pb_ostream_t       ostream          = pb_ostream_from_buffer(handle->buffer, handle->buffer_size);
         cave_talk_Odometry odometry_message = cave_talk_Odometry_init_zero;
 
         odometry_message.x_accel_meters_per_second_squared = x_accel;
         odometry_message.y_accel_meters_per_second_squared = y_accel;
         odometry_message.z_accel_meters_per_second_squared = z_accel;
-        odometry_message.roll_radians_per_second = roll;
-        odometry_message.pitch_radians_per_second = pitch;
-        odometry_message.yaw_radians_per_second = yaw;
-        odometry_message.wheel_0_rate_radians_per_second = wheel_0_rate;
-        odometry_message.wheel_1_rate_radians_per_second = wheel_1_rate;
-        odometry_message.wheel_2_rate_radians_per_second = wheel_2_rate;
-        odometry_message.wheel_3_rate_radians_per_second = wheel_3_rate;
+        odometry_message.roll_radians_per_second           = roll;
+        odometry_message.pitch_radians_per_second          = pitch;
+        odometry_message.yaw_radians_per_second            = yaw;
+        odometry_message.wheel_0_rate_radians_per_second   = wheel_0_rate;
+        odometry_message.wheel_1_rate_radians_per_second   = wheel_1_rate;
+        odometry_message.wheel_2_rate_radians_per_second   = wheel_2_rate;
+        odometry_message.wheel_3_rate_radians_per_second   = wheel_3_rate;
 
 
         if (!pb_encode(&ostream, cave_talk_Odometry_fields, &odometry_message))
@@ -401,7 +401,7 @@ static CaveTalk_Error_t CaveTalk_HandleOdometry(const CaveTalk_Handle_t *const h
     }
     else
     {
-        pb_istream_t   istream      = pb_istream_from_buffer(handle->buffer, handle->buffer_size);
+        pb_istream_t       istream          = pb_istream_from_buffer(handle->buffer, handle->buffer_size);
         cave_talk_Odometry odometry_message = cave_talk_Odometry_init_zero;
 
         if (!pb_decode(&istream, cave_talk_Odometry_fields, &odometry_message))
@@ -411,15 +411,15 @@ static CaveTalk_Error_t CaveTalk_HandleOdometry(const CaveTalk_Handle_t *const h
         else if (NULL != handle->listen_callbacks.hear_odometry)
         {
             handle->listen_callbacks.hear_odometry(odometry_message.x_accel_meters_per_second_squared,
-                                                    odometry_message.y_accel_meters_per_second_squared,
-                                                    odometry_message.z_accel_meters_per_second_squared,
-                                                    odometry_message.roll_radians_per_second,
-                                                    odometry_message.pitch_radians_per_second,
-                                                    odometry_message.yaw_radians_per_second,
-                                                    odometry_message.wheel_0_rate_radians_per_second,
-                                                    odometry_message.wheel_1_rate_radians_per_second,
-                                                    odometry_message.wheel_2_rate_radians_per_second,
-                                                    odometry_message.wheel_3_rate_radians_per_second);
+                                                   odometry_message.y_accel_meters_per_second_squared,
+                                                   odometry_message.z_accel_meters_per_second_squared,
+                                                   odometry_message.roll_radians_per_second,
+                                                   odometry_message.pitch_radians_per_second,
+                                                   odometry_message.yaw_radians_per_second,
+                                                   odometry_message.wheel_0_rate_radians_per_second,
+                                                   odometry_message.wheel_1_rate_radians_per_second,
+                                                   odometry_message.wheel_2_rate_radians_per_second,
+                                                   odometry_message.wheel_3_rate_radians_per_second);
         }
     }
 

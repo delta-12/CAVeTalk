@@ -25,7 +25,7 @@ class ListenerCallbacks
         virtual void HearCameraMovement(const CaveTalk_Radian_t pan, const CaveTalk_Radian_t tilt)                     = 0;
         virtual void HearLights(const bool headlights)                                                                 = 0;
         virtual void HearMode(const bool manual)                                                                       = 0;
-        virtual void HearOdometry(const CaveTalk_MetersPerSecondSquared_t x_accel, 
+        virtual void HearOdometry(const CaveTalk_MetersPerSecondSquared_t x_accel,
                                   const CaveTalk_MetersPerSecondSquared_t y_accel,
                                   const CaveTalk_MetersPerSecondSquared_t z_accel,
                                   const CaveTalk_RadiansPerSecond_t roll,
@@ -34,7 +34,7 @@ class ListenerCallbacks
                                   const CaveTalk_RadiansPerSecond_t wheel_0_rate,
                                   const CaveTalk_RadiansPerSecond_t wheel_1_rate,
                                   const CaveTalk_RadiansPerSecond_t wheel_2_rate,
-                                  const CaveTalk_RadiansPerSecond_t wheel_3_rate)                                    = 0;
+                                  const CaveTalk_RadiansPerSecond_t wheel_3_rate) = 0;
 };
 
 class Listener
@@ -74,7 +74,7 @@ class Talker
         CaveTalk_Error_t SpeakCameraMovement(const CaveTalk_Radian_t pan, const CaveTalk_Radian_t tilt);
         CaveTalk_Error_t SpeakLights(const bool headlights);
         CaveTalk_Error_t SpeakMode(const bool manual);
-        CaveTalk_Error_t SpeakOdometry( const CaveTalk_MetersPerSecondSquared_t x_accel, 
+        CaveTalk_Error_t SpeakOdometry( const CaveTalk_MetersPerSecondSquared_t x_accel,
                                         const CaveTalk_MetersPerSecondSquared_t y_accel,
                                         const CaveTalk_MetersPerSecondSquared_t z_accel,
                                         const CaveTalk_RadiansPerSecond_t roll,
@@ -84,7 +84,7 @@ class Talker
                                         const CaveTalk_RadiansPerSecond_t wheel_1_rate,
                                         const CaveTalk_RadiansPerSecond_t wheel_2_rate,
                                         const CaveTalk_RadiansPerSecond_t wheel_3_rate);
-                                        
+
     private:
         CaveTalk_LinkHandle_t link_handle_;
         std::array<uint8_t, kMaxPayloadSize> message_buffer_;

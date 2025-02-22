@@ -16,7 +16,7 @@ typedef struct
     void (*hear_camera_movement)(const CaveTalk_Radian_t pan, const CaveTalk_Radian_t tilt);
     void (*hear_lights)(const bool headlights);
     void (*hear_mode)(const bool manual);
-    void (*hear_odometry)(  const CaveTalk_MetersPerSecondSquared_t x_accel, 
+    void (*hear_odometry)(  const CaveTalk_MetersPerSecondSquared_t x_accel,
                             const CaveTalk_MetersPerSecondSquared_t y_accel,
                             const CaveTalk_MetersPerSecondSquared_t z_accel,
                             const CaveTalk_RadiansPerSecond_t roll,
@@ -64,7 +64,7 @@ CaveTalk_Error_t CaveTalk_SpeakCameraMovement(const CaveTalk_Handle_t *const han
 CaveTalk_Error_t CaveTalk_SpeakLights(const CaveTalk_Handle_t *const handle, const bool headlights);
 CaveTalk_Error_t CaveTalk_SpeakMode(const CaveTalk_Handle_t *const handle, const bool manual);
 CaveTalk_Error_t CaveTalk_SpeakOdometry(const CaveTalk_Handle_t *const handle,
-                                        const CaveTalk_MetersPerSecondSquared_t x_accel, 
+                                        const CaveTalk_MetersPerSecondSquared_t x_accel,
                                         const CaveTalk_MetersPerSecondSquared_t y_accel,
                                         const CaveTalk_MetersPerSecondSquared_t z_accel,
                                         const CaveTalk_RadiansPerSecond_t roll,
