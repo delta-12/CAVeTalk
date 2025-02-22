@@ -19,6 +19,8 @@ CAVEMAN controller message protocol
 | 0x04 | Lights          | Toggles the Onboard Headlights                                         |
 | 0x05 | Mode            | Switches between Manual Driving Mode and Autonomous Driving Mode       |
 | 0x06 | Odometry        | Describes the 3 relative acceleration axes [m/s^2], 3 gyroscopic axes [rad/s], and 4 encoder values for each wheel [rad/s] |
+| 0x07 | Configuration   | Send various configuration codes in the form of a character string |
+| 0x08 | Logging         | Send logs between devices to echo states and declare status |
 
 3. Length refers to the length of the packet in bytes
 4. Payload refers to the main piece of information sent in the packet
