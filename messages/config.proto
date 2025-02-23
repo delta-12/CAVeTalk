@@ -4,4 +4,5 @@ package cave_talk;
 
 message Config {
     string config_string = 1;
+    int size = 2;
 }
