@@ -148,7 +148,7 @@ CaveTalk_Error_t CaveTalk_Listen(const CaveTalk_LinkHandle_t *const handle,
 
 
             /* Receive CRC */
-            if (CAVE_TALK_ERROR_NONE != error)
+            if ((CAVE_TALK_ERROR_NONE != error) && (CAVE_TALK_ERROR_SOCKET_CLOSED != error))
             {
                 CaveTalk_FlushBuffer(sizeof(crc), handle);
             }
