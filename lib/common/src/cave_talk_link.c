@@ -216,8 +216,10 @@ static inline void CaveTalk_FlushBuffer(size_t leftoverBytes, const CaveTalk_Lin
         throwout_error  = handle->receive(&throwout_buffer, sizeof(throwout_buffer), &byte_thrown);
         remainingBytes -= byte_thrown;
 
-        if (remainingBytes == leftoverBytes)
+        if (byte_thrown == 0)
+        {
             break;
+        }
     }
 
     return;
