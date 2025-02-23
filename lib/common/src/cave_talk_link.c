@@ -127,7 +127,7 @@ CaveTalk_Error_t CaveTalk_Listen(const CaveTalk_LinkHandle_t *const handle,
 
 
             /* Receive payload */
-            if (CAVE_TALK_ERROR_NONE != error)
+            if ((CAVE_TALK_ERROR_NONE != error) && (CAVE_TALK_ERROR_SOCKET_CLOSED != error))
             {
                 CaveTalk_FlushBuffer(*length, handle);
             }
@@ -204,9 +204,7 @@ static inline void CaveTalk_FlushBuffer(size_t leftoverBytes, const CaveTalk_Lin
     size_t           remainingBytes  = 0;
     size_t           byte_thrown     = 0U;
     uint8_t          throwout_buffer = 0U;
-    CaveTalk_Error_t throwout_error  = CAVE_TALK_ERROR_NONE;
-
-    throwout_error = handle->available(&remainingBytes);
+    CaveTalk_Error_t throwout_error  = handle->available(&remainingBytes);
 
     if (remainingBytes > leftoverBytes)
     {
