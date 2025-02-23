@@ -30,6 +30,8 @@ static inline uint8_t CaveTalk_GetLowerByte(const uint16_t value);
 static inline uint16_t CaveTalk_GetUpperUint16(const uint32_t value);
 static inline uint16_t CaveTalk_GetLowerUint16(const uint32_t value);
 
+static inline void CaveTalk_FlushBuffer(size_t remainingBytes, const CaveTalk_LinkHandle_t *const handle);
+
 CaveTalk_Error_t CaveTalk_Speak(const CaveTalk_LinkHandle_t *const handle,
                                 const CaveTalk_Id_t id,
                                 const void *const data,
@@ -50,7 +52,6 @@ CaveTalk_Error_t CaveTalk_Speak(const CaveTalk_LinkHandle_t *const handle,
         /* TODO SD-164 calculate CRC */
         CaveTalk_Crc_t crc = 0U;
 
-        /* TODO SD-182 determine error behavior */
         /* Send header */
         error = handle->send(header, sizeof(header));
 
@@ -76,7 +77,8 @@ CaveTalk_Error_t CaveTalk_Listen(const CaveTalk_LinkHandle_t *const handle,
                                  const size_t size,
                                  CaveTalk_Length_t *const length)
 {
-    CaveTalk_Error_t error = CAVE_TALK_ERROR_NULL;
+    CaveTalk_Error_t   error = CAVE_TALK_ERROR_NULL;
+    CaveTalk_Version_t version;
 
     if ((NULL == handle) ||
         (NULL == handle->receive) ||
@@ -109,33 +111,46 @@ CaveTalk_Error_t CaveTalk_Listen(const CaveTalk_LinkHandle_t *const handle,
             *id     = CAVE_TALK_ID_NONE;
             *length = 0U;
 
-            /* TODO SD-183 determine error behavior */
-            /* TODO SD-184 check version */
+
+
+
             /* Receive header */
             error   = handle->receive(header, sizeof(header), &bytes_received);
             *id     = header[CAVE_TALK_ID_INDEX];
             *length = header[CAVE_TALK_LENGTH_INDEX];
+            version = header[CAVE_TALK_VERSION_INDEX];
+
+            if ((CAVE_TALK_VERSION != version) && (CAVE_TALK_ERROR_NONE == error))
+            {
+                error = CAVE_TALK_ERROR_VERSION;
+            }
+
 
             /* Receive payload */
-            if (CAVE_TALK_ERROR_NONE != error)
+            if ((CAVE_TALK_ERROR_NONE != error) && (CAVE_TALK_ERROR_SOCKET_CLOSED != error))
             {
+                CaveTalk_FlushBuffer(*length, handle);
             }
             else if (CAVE_TALK_HEADER_SIZE != bytes_received)
             {
                 error = CAVE_TALK_ERROR_INCOMPLETE;
+                CaveTalk_FlushBuffer((*length) + (CAVE_TALK_HEADER_SIZE - bytes_received), handle);
             }
             else if (size < *length)
             {
                 error = CAVE_TALK_ERROR_SIZE;
+                CaveTalk_FlushBuffer((*length) - size, handle);
             }
             else
             {
                 error = handle->receive(data, *length, &bytes_received);
             }
 
+
             /* Receive CRC */
-            if (CAVE_TALK_ERROR_NONE != error)
+            if ((CAVE_TALK_ERROR_NONE != error) && (CAVE_TALK_ERROR_SOCKET_CLOSED != error))
             {
+                CaveTalk_FlushBuffer(sizeof(crc), handle);
             }
             else if (*length != bytes_received)
             {
@@ -182,4 +197,30 @@ static inline uint16_t CaveTalk_GetUpperUint16(const uint32_t value)
 static inline uint16_t CaveTalk_GetLowerUint16(const uint32_t value)
 {
     return (uint16_t)(value & CAVE_TALK_UINT16_MASK);
+}
+
+static inline void CaveTalk_FlushBuffer(size_t leftoverBytes, const CaveTalk_LinkHandle_t *const handle)
+{
+    size_t           remainingBytes  = 0;
+    size_t           byte_thrown     = 0U;
+    uint8_t          throwout_buffer = 0U;
+    CaveTalk_Error_t throwout_error  = handle->available(&remainingBytes);
+
+    if (remainingBytes > leftoverBytes)
+    {
+        remainingBytes = leftoverBytes;
+    }
+
+    while ((remainingBytes > 0) && (CAVE_TALK_ERROR_NONE == throwout_error))
+    {
+        throwout_error  = handle->receive(&throwout_buffer, sizeof(throwout_buffer), &byte_thrown);
+        remainingBytes -= byte_thrown;
+
+        if (byte_thrown == 0)
+        {
+            break;
+        }
+    }
+
+    return;
 }

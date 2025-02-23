@@ -137,12 +137,13 @@ TEST(CommonTests, SRAClosed)
 
 }
 
-TEST(CommonTests, SizeAndIncompleteness)
+TEST(CommonTests, SizeIncompleteVersion)
 {
 
     uint8_t data_send[10U] = {0U};
     uint8_t data_receive[3U] = {0U};
     uint8_t data_rand_0[4U] = {0U};
+    uint8_t data_rand_1[4U] = {1U, 0U, 0U, 0U};
     CaveTalk_Id_t id = 0U;
     CaveTalk_Length_t length = 0U;
 
@@ -153,14 +154,19 @@ TEST(CommonTests, SizeAndIncompleteness)
 
     ASSERT_EQ(CAVE_TALK_ERROR_NONE, CaveTalk_Listen(&kLinkHandle, &id, static_cast<void *>(data_receive), sizeof(data_receive), &length));
 
-
+    ring_buffer.Clear();
     ring_buffer.Write(data_rand_0, sizeof(data_rand_0));
 
+    ASSERT_EQ(CAVE_TALK_ERROR_VERSION, CaveTalk_Listen(&kLinkHandle, &id, static_cast<void *>(data_receive), sizeof(data_receive), &length));
+
+    ring_buffer.Clear();
+    ring_buffer.Write(data_rand_1, sizeof(data_rand_1));
+
+    ASSERT_EQ(CAVE_TALK_ERROR_VERSION, CaveTalk_Listen(&kAvailHandle, &id, static_cast<void *>(data_receive), sizeof(data_receive), &length));
+
+    ring_buffer.Clear();
+    ring_buffer.Write(data_rand_1, sizeof(data_rand_1));
     ASSERT_EQ(CAVE_TALK_ERROR_INCOMPLETE, CaveTalk_Listen(&kLinkHandle, &id, static_cast<void *>(data_receive), sizeof(data_receive), &length));
-
-    ring_buffer.Write(data_rand_0, sizeof(data_rand_0));
-
-    ASSERT_EQ(CAVE_TALK_ERROR_INCOMPLETE, CaveTalk_Listen(&kAvailHandle, &id, static_cast<void *>(data_receive), sizeof(data_receive), &length));
 
 
 }
