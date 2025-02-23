@@ -120,7 +120,7 @@ CaveTalk_Error_t CaveTalk_Listen(const CaveTalk_LinkHandle_t *const handle,
             *length = header[CAVE_TALK_LENGTH_INDEX];
             version = header[CAVE_TALK_VERSION_INDEX];
 
-            if (CAVE_TALK_VERSION != version)
+            if ((CAVE_TALK_VERSION != version) && (CAVE_TALK_ERROR_NONE == error))
             {
                 error = CAVE_TALK_ERROR_VERSION;
             }
@@ -134,15 +134,18 @@ CaveTalk_Error_t CaveTalk_Listen(const CaveTalk_LinkHandle_t *const handle,
             else if (CAVE_TALK_HEADER_SIZE != bytes_received)
             {
                 error = CAVE_TALK_ERROR_INCOMPLETE;
+                CaveTalk_FlushBuffer((*length) + (CAVE_TALK_HEADER_SIZE - bytes_received), handle);
             }
             else if (size < *length)
             {
                 error = CAVE_TALK_ERROR_SIZE;
+                CaveTalk_FlushBuffer((*length) - size, handle);
             }
             else
             {
                 error = handle->receive(data, *length, &bytes_received);
             }
+
 
             /* Receive CRC */
             if (CAVE_TALK_ERROR_NONE != error)
@@ -198,15 +201,25 @@ static inline uint16_t CaveTalk_GetLowerUint16(const uint32_t value)
 
 static inline void CaveTalk_FlushBuffer(size_t leftoverBytes, const CaveTalk_LinkHandle_t *const handle)
 {
-    size_t           remainingBytes  = leftoverBytes;
+    size_t           remainingBytes  = 0;
     size_t           byte_thrown     = 0U;
     uint8_t          throwout_buffer = 0U;
     CaveTalk_Error_t throwout_error  = CAVE_TALK_ERROR_NONE;
 
-    while ((remainingBytes > 0) && (CAVE_TALK_ERROR_NONE != throwout_error))
+    throwout_error = handle->available(&remainingBytes);
+
+    if (remainingBytes > leftoverBytes)
+    {
+        remainingBytes = leftoverBytes;
+    }
+
+    while ((remainingBytes > 0) && (CAVE_TALK_ERROR_NONE == throwout_error))
     {
         throwout_error  = handle->receive(&throwout_buffer, sizeof(throwout_buffer), &byte_thrown);
         remainingBytes -= byte_thrown;
+
+        if (remainingBytes == leftoverBytes)
+            break;
     }
 
     return;
