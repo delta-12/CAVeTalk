@@ -35,8 +35,7 @@ class ListenerCallbacks
                                   const CaveTalk_RadiansPerSecond_t wheel_1_rate,
                                   const CaveTalk_RadiansPerSecond_t wheel_2_rate,
                                   const CaveTalk_RadiansPerSecond_t wheel_3_rate) = 0;
-        virtual void HearConfig(const CaveTalk_Config_t config_text) = 0;
-        virtual void HearLog(const CaveTalk_Log_t log_text) = 0;
+        virtual void HearLog(const CaveTalk_Message_t log_text) = 0;
 
 };
 
@@ -59,7 +58,6 @@ class Listener
         CaveTalk_Error_t HandleLights(const CaveTalk_Length_t length) const;
         CaveTalk_Error_t HandleMode(const CaveTalk_Length_t length) const;
         CaveTalk_Error_t HandleOdometry(const CaveTalk_Length_t length) const;
-        CaveTalk_Error_t HandleConfig(const CaveTalk_Length_t length) const;
         CaveTalk_Error_t HandleLog(const CaveTalk_Length_t length) const;
         CaveTalk_LinkHandle_t link_handle_;
         std::shared_ptr<ListenerCallbacks> listener_callbacks_;
@@ -89,8 +87,7 @@ class Talker
                                         const CaveTalk_RadiansPerSecond_t wheel_1_rate,
                                         const CaveTalk_RadiansPerSecond_t wheel_2_rate,
                                         const CaveTalk_RadiansPerSecond_t wheel_3_rate);
-        CaveTalk_Error_t SpeakConfig(const CaveTalk_Config_t config_text);
-        CaveTalk_Error_t SpeakLog(const CaveTalk_Log_t log_text);
+        CaveTalk_Error_t SpeakLog(const CaveTalk_Message_t log_text);
 
     private:
         CaveTalk_LinkHandle_t link_handle_;

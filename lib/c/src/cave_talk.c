@@ -5,6 +5,7 @@
 #include "camera_movement.pb.h"
 #include "ids.pb.h"
 #include "lights.pb.h"
+#include "log.pb.h"
 #include "mode.pb.h"
 #include "movement.pb.h"
 #include "ooga_booga.pb.h"
@@ -21,6 +22,7 @@ static CaveTalk_Error_t CaveTalk_HandleCameraMovement(const CaveTalk_Handle_t *c
 static CaveTalk_Error_t CaveTalk_HandleLights(const CaveTalk_Handle_t *const handle);
 static CaveTalk_Error_t CaveTalk_HandleMode(const CaveTalk_Handle_t *const handle);
 static CaveTalk_Error_t CaveTalk_HandleOdometry(const CaveTalk_Handle_t *const handle);
+static CaveTalk_Error_t CaveTalk_HandleLog(const CaveTalk_Handle_t *const handle);
 
 CaveTalk_Error_t CaveTalk_Hear(const CaveTalk_Handle_t *const handle)
 {
@@ -66,6 +68,9 @@ CaveTalk_Error_t CaveTalk_Hear(const CaveTalk_Handle_t *const handle)
                 break;
             case cave_talk_Id_ID_ODOMETRY:
                 error = CaveTalk_HandleOdometry(handle);
+                break;
+            case cave_talk_Id_ID_LOG:
+                error = CaveTalk_HandleLog(handle);
                 break;
             default:
                 error = CAVE_TALK_ERROR_ID;
@@ -261,6 +266,35 @@ CaveTalk_Error_t CaveTalk_SpeakOdometry(const CaveTalk_Handle_t *const handle,
     return error;
 }
 
+CaveTalk_Error_t CaveTalk_SpeakLog(const CaveTalk_Handle_t *const handle, const CaveTalk_Message_t log_text)
+{
+    CaveTalk_Error_t error = CAVE_TALK_ERROR_NULL;
+
+    if ((NULL == handle) || (NULL == handle->buffer) || (NULL == handle->link_handle.send))
+    {
+    }
+    else
+    {
+        pb_ostream_t   ostream      = pb_ostream_from_buffer(handle->buffer, handle->buffer_size);
+        cave_talk_Log log_message = cave_talk_Log_init_zero;
+
+        log_message.log_string.arg = log_text;
+
+        if (!pb_encode(&ostream, cave_talk_Log_fields, &log_message))
+        {
+            error = CAVE_TALK_ERROR_SIZE;
+        }
+        else
+        {
+            error = CaveTalk_Speak(&handle->link_handle, (CaveTalk_Id_t)cave_talk_Id_ID_LOG, handle->buffer, ostream.bytes_written);
+        }
+    }
+
+    return error;
+}
+
+
+
 static CaveTalk_Error_t CaveTalk_HandleOogaBooga(const CaveTalk_Handle_t *const handle)
 {
     CaveTalk_Error_t error = CAVE_TALK_ERROR_NONE;
@@ -424,4 +458,32 @@ static CaveTalk_Error_t CaveTalk_HandleOdometry(const CaveTalk_Handle_t *const h
     }
 
     return error;
+}
+
+static CaveTalk_Error_t CaveTalk_HandleLog(const CaveTalk_Handle_t *const handle)
+{
+
+    CaveTalk_Error_t error = CAVE_TALK_ERROR_NONE;
+
+    if ((NULL == handle) || (NULL == handle->buffer))
+    {
+        error = CAVE_TALK_ERROR_NULL;
+    }
+    else
+    {
+        pb_istream_t   istream      = pb_istream_from_buffer(handle->buffer, handle->buffer_size);
+        cave_talk_Log log_message = cave_talk_Log_init_zero;
+
+        if (!pb_decode(&istream, cave_talk_Log_fields, &log_message))
+        {
+            error = CAVE_TALK_ERROR_PARSE;
+        }
+        else if (NULL != handle->listen_callbacks.hear_log)
+        {
+            handle->listen_callbacks.hear_log(log_message.log_string.arg);
+        }
+    }
+
+    return error;
+
 }

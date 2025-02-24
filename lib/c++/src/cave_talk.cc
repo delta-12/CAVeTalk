@@ -10,7 +10,6 @@
 #include "movement.pb.h"
 #include "ooga_booga.pb.h"
 #include "odometry.pb.h"
-#include "config.pb.h"
 #include "log.pb.h"
 
 #include "cave_talk_link.h"
@@ -61,9 +60,6 @@ CaveTalk_Error_t Listener::Listen(void)
             break;
         case ID_ODOMETRY:
             error = HandleOdometry(length);
-            break;
-        case ID_CONFIG:
-            error = HandleConfig(length);
             break;
         case ID_LOG:
             error = HandleLog(length);
@@ -202,23 +198,6 @@ CaveTalk_Error_t Listener::HandleOdometry(CaveTalk_Length_t length) const
 
 }
 
-CaveTalk_Error_t Listener::HandleConfig(CaveTalk_Length_t length) const
-{
-
-    Config config_message;
-
-    if (!config_message.ParseFromArray(buffer_.data(), length))
-    {
-        return CAVE_TALK_ERROR_PARSE;
-    }
-
-    const CaveTalk_Config_t config_text = config_message.config_string();
-
-    listener_callbacks_->HearConfig(config_text);
-
-    return CAVE_TALK_ERROR_NONE;
-}
-
 CaveTalk_Error_t Listener::HandleLog(CaveTalk_Length_t length) const
 {
 
@@ -230,7 +209,7 @@ CaveTalk_Error_t Listener::HandleLog(CaveTalk_Length_t length) const
     }
 
     const char* log_ptr = (log_message.log_string()).c_str();
-    const CaveTalk_Log_t log_text = const_cast<CaveTalk_Log_t>(log_ptr);
+    const CaveTalk_Message_t log_text = const_cast<CaveTalk_Message_t>(log_ptr);
 
     listener_callbacks_->HearLog(log_text);
 
@@ -330,18 +309,7 @@ CaveTalk_Error_t Talker::SpeakOdometry(   const CaveTalk_MetersPerSecondSquared_
     return CaveTalk_Speak(&link_handle_, static_cast<CaveTalk_Id_t>(ID_ODOMETRY), message_buffer_.data(), length);
 }
 
-CaveTalk_Error_t Talker::SpeakConfig(const CaveTalk_Config_t config_text)
-{
-    Config config_message;
-    config_message.set_config_string(config_text);
-
-    std::size_t length = config_message.ByteSizeLong();
-    config_message.SerializeToArray(message_buffer_.data(), message_buffer_.max_size());
-
-    return CaveTalk_Speak(&link_handle_, static_cast<CaveTalk_Id_t>(ID_CONFIG), message_buffer_.data(), length);
-}
-
-CaveTalk_Error_t Talker::SpeakLog(const CaveTalk_Log_t log_text)
+CaveTalk_Error_t Talker::SpeakLog(const CaveTalk_Message_t log_text)
 {
     Log log_message;
     log_message.set_log_string(log_text);

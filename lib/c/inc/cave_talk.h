@@ -26,6 +26,7 @@ typedef struct
                             const CaveTalk_RadiansPerSecond_t wheel_1_rate,
                             const CaveTalk_RadiansPerSecond_t wheel_2_rate,
                             const CaveTalk_RadiansPerSecond_t wheel_3_rate);
+    void (*hear_log)(const CaveTalk_Message_t log_text);
 } CaveTalk_ListenCallbacks_t;
 
 typedef struct
@@ -74,6 +75,7 @@ CaveTalk_Error_t CaveTalk_SpeakOdometry(const CaveTalk_Handle_t *const handle,
                                         const CaveTalk_RadiansPerSecond_t wheel_1_rate,
                                         const CaveTalk_RadiansPerSecond_t wheel_2_rate,
                                         const CaveTalk_RadiansPerSecond_t wheel_3_rate);
+CaveTalk_Error_t CaveTalk_SpeakLog(const CaveTalk_Handle_t *const handle, const CaveTalk_Message_t log_text);
 
 #ifdef __cplusplus
 }
