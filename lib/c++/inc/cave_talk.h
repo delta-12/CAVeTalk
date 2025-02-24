@@ -35,7 +35,7 @@ class ListenerCallbacks
                                   const CaveTalk_RadiansPerSecond_t wheel_1_rate,
                                   const CaveTalk_RadiansPerSecond_t wheel_2_rate,
                                   const CaveTalk_RadiansPerSecond_t wheel_3_rate) = 0;
-        virtual void HearLog(const CaveTalk_Message_t log_text) = 0;
+        virtual void HearLog(const CaveTalk_Message_t log_text)                   = 0;
 
 };
 

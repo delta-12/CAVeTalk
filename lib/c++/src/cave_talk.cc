@@ -208,7 +208,7 @@ CaveTalk_Error_t Listener::HandleLog(CaveTalk_Length_t length) const
         return CAVE_TALK_ERROR_PARSE;
     }
 
-    const char* log_ptr = (log_message.log_string()).c_str();
+    const char*              log_ptr  = (log_message.log_string()).c_str();
     const CaveTalk_Message_t log_text = const_cast<CaveTalk_Message_t>(log_ptr);
 
     listener_callbacks_->HearLog(log_text);

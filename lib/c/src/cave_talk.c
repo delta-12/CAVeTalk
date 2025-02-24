@@ -275,7 +275,7 @@ CaveTalk_Error_t CaveTalk_SpeakLog(const CaveTalk_Handle_t *const handle, const 
     }
     else
     {
-        pb_ostream_t   ostream      = pb_ostream_from_buffer(handle->buffer, handle->buffer_size);
+        pb_ostream_t  ostream     = pb_ostream_from_buffer(handle->buffer, handle->buffer_size);
         cave_talk_Log log_message = cave_talk_Log_init_zero;
 
         log_message.log_string.arg = log_text;
@@ -471,7 +471,7 @@ static CaveTalk_Error_t CaveTalk_HandleLog(const CaveTalk_Handle_t *const handle
     }
     else
     {
-        pb_istream_t   istream      = pb_istream_from_buffer(handle->buffer, handle->buffer_size);
+        pb_istream_t  istream     = pb_istream_from_buffer(handle->buffer, handle->buffer_size);
         cave_talk_Log log_message = cave_talk_Log_init_zero;
 
         if (!pb_decode(&istream, cave_talk_Log_fields, &log_message))
